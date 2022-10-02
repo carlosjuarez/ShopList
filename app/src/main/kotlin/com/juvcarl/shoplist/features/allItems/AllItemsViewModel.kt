@@ -16,15 +16,15 @@ class AllItemsViewModel @Inject constructor(
     private val itemsRepository: ItemRepository
 ) : ViewModel() {
 
-    val itemUIState : StateFlow<ItemsUIState> = flow{
+    val itemUIState : StateFlow<AllItemsUIState> = flow{
         itemsRepository.getItemsStream()
             .catch {
-                emit(ItemsUIState.Error)
+                emit(AllItemsUIState.Error)
             }
             .collect{
-                emit(ItemsUIState.Success(it))
+                emit(AllItemsUIState.Success(it))
             }
-    }.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = ItemsUIState.Loading)
+    }.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = AllItemsUIState.Loading)
 
     fun deleteItem(item: Item){
         viewModelScope.launch {
@@ -34,7 +34,8 @@ class AllItemsViewModel @Inject constructor(
 
     fun toggleItem(item: Item){
         viewModelScope.launch {
-            itemsRepository.updateitem(item)
+            val updatedItem = item.copy(buyAgain = !item.buyAgain)
+            itemsRepository.updateitem(updatedItem)
         }
     }
 
@@ -46,8 +47,8 @@ class AllItemsViewModel @Inject constructor(
 
 }
 
-sealed interface ItemsUIState{
-    data class Success(val items: List<Item>) : ItemsUIState
-    object Loading : ItemsUIState
-    object Error : ItemsUIState
+sealed interface AllItemsUIState{
+    data class Success(val items: List<Item>) : AllItemsUIState
+    object Loading : AllItemsUIState
+    object Error : AllItemsUIState
 }
