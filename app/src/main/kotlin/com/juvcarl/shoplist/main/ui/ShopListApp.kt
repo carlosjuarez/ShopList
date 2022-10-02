@@ -96,6 +96,7 @@ fun ShopListBottomBar(
                                 painter = painterResource(id = icon.id),
                                 contentDescription = null
                             )
+                            else -> {}
                         }
                     },
                     label = { Text(stringResource(destination.iconTextId)) }
