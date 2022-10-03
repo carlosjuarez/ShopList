@@ -29,7 +29,9 @@ import kotlinx.datetime.Clock
 import com.juvcarl.shoplist.R
 import com.juvcarl.shoplist.ui.ShopListIcon
 import com.juvcarl.shoplist.ui.ShopListIcons
-import com.juvcarl.shoplist.ui.component.AllItemsTopAppBar
+import com.juvcarl.shoplist.ui.component.ErrorScreen
+import com.juvcarl.shoplist.ui.component.LoadingScreen
+import com.juvcarl.shoplist.ui.component.ShopListTopAppBar
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -62,7 +64,7 @@ fun AllItemsScreen(
     ShopListTheme {
         Scaffold (
             topBar = {
-                AllItemsTopAppBar(
+                ShopListTopAppBar(
                     titleRes = R.string.all_items,
                     navigationIcon = ShopListIcons.Search,
                     actionIcon = ShopListIcons.Add,
@@ -86,8 +88,8 @@ fun AllItemsScreen(
                     .fillMaxSize()
             ) {
                 when(allItemsState){
-                    AllItemsUIState.Error -> ErrorDisplay()
-                    AllItemsUIState.Loading -> LoadingDisplay()
+                    AllItemsUIState.Error -> ErrorScreen()
+                    AllItemsUIState.Loading -> LoadingScreen()
                     is AllItemsUIState.Success -> AllItemsList(allItemsState.items, addItem, deleteItem, toggleBuyStatus)
                     else -> {}
                 }
@@ -118,36 +120,6 @@ fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (Item) -> Unit, onDismis
             },
             confirmButton = {}
         )
-    }
-}
-
-@Composable
-fun ErrorDisplay(){
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = stringResource(id = R.string.error_occurred), textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.error)
-    }
-
-}
-
-@Composable
-fun LoadingDisplay(){
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CircularProgressIndicator()
-            Text(text = stringResource(id = R.string.loading))
-        }
-
-
     }
 }
 
@@ -204,9 +176,11 @@ fun ItemCard(item: Item, deleteItem: (Item) -> Unit, toggleBuyStatus: (Item) -> 
             Text(text = item.type, style = MaterialTheme.typography.bodyMedium)
         }
         ShopListIcon(icon = if (item.buyAgain) ShopListIcons.BuyAgain else ShopListIcons.WaitToBuy,
-            modifier = Modifier.weight(0.2f).clickable {
-                toggleBuyStatus(item)
-            }
+            modifier = Modifier
+                .weight(0.2f)
+                .clickable {
+                    toggleBuyStatus(item)
+                }
         )
     }
 }
@@ -308,22 +282,10 @@ fun AddNewItemPreview(){
 
 @Preview(showBackground = true)
 @Composable
-fun ErrorDisplayPreview() {
-    ErrorDisplay()
-}
-
-@Preview(showBackground = true)
-@Composable
 fun AllProductsListPreview(){
     ShopListTheme {
         var item = Item(0L,"test product", Clock.System.now(),true,"special")
         ItemCard(item = item, {},{})
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoadDisplayPreview() {
-    LoadingDisplay()
 }
 

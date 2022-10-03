@@ -1,13 +1,9 @@
 package com.juvcarl.shoplist.ui.component
 
 import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.juvcarl.shoplist.ui.Icon
@@ -16,10 +12,10 @@ import com.juvcarl.shoplist.R
 import com.juvcarl.shoplist.ui.ShopListIcon
 
 @Composable
-fun AllItemsTopAppBar(
+fun ShopListTopAppBar(
     @StringRes titleRes: Int,
-    navigationIcon: Icon?,
-    actionIcon: Icon?,
+    navigationIcon: Icon? = null,
+    actionIcon: Icon? = null,
     modifier: Modifier = Modifier,
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
     onNavigationClick: () -> Unit = {},
@@ -49,7 +45,7 @@ fun AllItemsTopAppBar(
 @Preview("Top App Bar")
 @Composable
 fun AllItemsTopAppBarPreview() {
-    AllItemsTopAppBar(
+    ShopListTopAppBar(
         titleRes = R.string.all_items,
         navigationIcon = ShopListIcons.Search,
         actionIcon = ShopListIcons.Add

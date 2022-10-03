@@ -36,6 +36,8 @@ object ShopListIcons {
     val Add = Icon.DrawableResourceIcon(R.drawable.ic_outline_add, R.string.add_new_item)
     val BuyAgain = Icon.DrawableResourceIcon(R.drawable.ic_outline_buy_now, R.string.buy_again)
     val WaitToBuy = Icon.DrawableResourceIcon(R.drawable.ic_outline_wait_to_buy, R.string.wait_to_buy)
+    val ShopListSelected = Icon.DrawableResourceIcon(R.drawable.ic_outline_shoplist_selected, R.string.shop_list_selected)
+    val ShopListUnselected = Icon.DrawableResourceIcon(R.drawable.ic_outline_shoplist_unselected, R.string.shop_list_unselected)
 }
 
 sealed class Icon {
