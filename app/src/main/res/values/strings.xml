@@ -16,4 +16,8 @@
     <string name="loading">Loading</string>
     <string name="buy_again">Buy Again</string>
     <string name="wait_to_buy">Wait to buy</string>
+    <string name="shop_list_selected">Shop List selected</string>
+    <string name="shop_list_unselected">Shop List Unselected</string>
+    <string name="shop_list">Shop List</string>
+    <string name="no_items_to_shop">No Items to buy</string>
 </resources>

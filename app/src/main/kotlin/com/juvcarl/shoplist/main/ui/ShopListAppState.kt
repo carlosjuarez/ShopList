@@ -11,9 +11,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.juvcarl.shoplist.R
 import com.juvcarl.shoplist.features.allItems.navigation.AllItemsDestination
+import com.juvcarl.shoplist.features.shopitems.navigation.ShopItemsDestination
 import com.juvcarl.shoplist.main.navigation.TopLevelDestination
 import com.juvcarl.shoplist.navigation.ShopListNavigationDestination
+import com.juvcarl.shoplist.ui.ShopListIcons
 
 
 @Composable
@@ -39,13 +42,15 @@ class ShopListAppState(
     /*val shouldShowNavRail: Boolean
         get() = !shouldShowBottomBar*/
 
-    val topLevelDestinations: List<TopLevelDestination> = listOf()// Add navigation destinations{
-        /*TopLevelDestination(
-            route = AllItemsDestination.route,
-            destination = AllItemsDestination.destination,
-            selectedIcon =
-        ),
-    }*/
+    val topLevelDestinations: List<TopLevelDestination> = listOf(
+        TopLevelDestination(
+            route = ShopItemsDestination.route,
+            destination = ShopItemsDestination.destination,
+            selectedIcon = ShopListIcons.ShopListSelected,
+            unselectedIcon = ShopListIcons.ShopListUnselected,
+            iconTextId = R.string.shop_list
+        )
+    )
 
     fun navigate(destination: ShopListNavigationDestination, route: String? = null){
         if(destination is TopLevelDestination){

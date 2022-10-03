@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.juvcarl.shoplist.features.allItems.navigation.AllItemsDestination
 import com.juvcarl.shoplist.features.allItems.navigation.allItemsGraph
+import com.juvcarl.shoplist.features.shopitems.navigation.shopItemsGraph
 import com.juvcarl.shoplist.navigation.ShopListNavigationDestination
 
 @Composable
@@ -20,5 +21,6 @@ fun ShopListNavHost(
         navController = navController,startDestination = startDestination,modifier = modifier,
     ){
         allItemsGraph()
+        shopItemsGraph()
     }
 }
