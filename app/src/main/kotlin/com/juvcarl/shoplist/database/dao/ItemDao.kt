@@ -15,6 +15,10 @@ interface ItemDao {
     )
     fun getItems(): Flow<List<ItemEntity>>
 
+    @Query(
+        value = """SELECT * FROM items WHERE name LIKE '%' || :searchQuery || '%'"""
+    )
+    fun searchItemByName(searchQuery: String): Flow<List<ItemEntity>>
 
     @Query(
         value = """SELECT * FROM items where buyAgain = 1 ORDER BY date DESC"""
