@@ -1,5 +1,6 @@
 package com.juvcarl.shoplist
 
+import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.juvcarl.shoplist.repository.ItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,15 +18,26 @@ class AllItemsViewModel @Inject constructor(
     private val itemsRepository: ItemRepository
 ) : ViewModel() {
 
-    val itemUIState : StateFlow<AllItemsUIState> = flow{
-        itemsRepository.getItemsStream()
-            .catch {
-                emit(AllItemsUIState.Error)
+    var searchQuery = MutableStateFlow("")
+
+    val itemUIState : StateFlow<AllItemsUIState> = searchQuery
+        .debounce(50)
+        .distinctUntilChanged()
+        .combine(
+            itemsRepository.getItemsStream()
+        ){ sort, items ->
+            if(!sort.isEmpty()){
+                AllItemsUIState.Success(items.filter { it.name.contains(sort,true) })
+            }else{
+                AllItemsUIState.Success(items)
             }
-            .collect{
-                emit(AllItemsUIState.Success(it))
-            }
-    }.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = AllItemsUIState.Loading)
+        }.catch {
+            AllItemsUIState.Error
+        }.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = AllItemsUIState.Loading)
+
+    fun searchProduct(name: String){
+        searchQuery.value = name
+    }
 
     fun deleteItem(item: Item){
         viewModelScope.launch {
@@ -34,6 +47,7 @@ class AllItemsViewModel @Inject constructor(
 
     fun toggleItem(item: Item){
         viewModelScope.launch {
+            searchQuery.value = "s"
             val updatedItem = item.copy(buyAgain = !item.buyAgain)
             itemsRepository.updateitem(updatedItem)
         }

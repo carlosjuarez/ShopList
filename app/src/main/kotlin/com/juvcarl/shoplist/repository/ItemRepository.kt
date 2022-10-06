@@ -11,4 +11,5 @@ interface ItemRepository {
     suspend fun deleteItem(id: Long)
     suspend fun insertItem(item: Item)
     suspend fun updateitem(item: Item)
+    fun getItemsByNameStream(searchQuery: String): Flow<List<Item>>
 }
