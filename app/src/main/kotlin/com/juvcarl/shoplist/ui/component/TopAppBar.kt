@@ -47,7 +47,7 @@ fun ShopListTopAppBar(
 fun AllItemsTopAppBarPreview() {
     ShopListTopAppBar(
         titleRes = R.string.all_items,
-        navigationIcon = ShopListIcons.Search,
+        navigationIcon = ShopListIcons.SearchUnselected,
         actionIcon = ShopListIcons.Add
     )
 }

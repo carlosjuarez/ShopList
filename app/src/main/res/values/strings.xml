@@ -20,4 +20,7 @@
     <string name="shop_list_unselected">Shop List Unselected</string>
     <string name="shop_list">Shop List</string>
     <string name="no_items_to_shop">No Items to buy</string>
+    <string name="search_label">Search Product</string>
+    <string name="search_hint">Product...</string>
+    <string name="no_item_found">There are no items with that name</string>
 </resources>

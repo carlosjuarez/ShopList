@@ -32,7 +32,8 @@ fun ShopListIcon(icon: Icon, modifier: Modifier = Modifier, tint : Color = Mater
 }
 
 object ShopListIcons {
-    val Search = Icon.DrawableResourceIcon(R.drawable.ic_outline_search, R.string.search)
+    val SearchUnselected = Icon.DrawableResourceIcon(R.drawable.ic_outline_search_unselected, R.string.search)
+    val SearchSelected = Icon.DrawableResourceIcon(R.drawable.ic_outline_search_selected, R.string.search)
     val Add = Icon.DrawableResourceIcon(R.drawable.ic_outline_add, R.string.add_new_item)
     val BuyAgain = Icon.DrawableResourceIcon(R.drawable.ic_outline_buy_now, R.string.buy_again)
     val WaitToBuy = Icon.DrawableResourceIcon(R.drawable.ic_outline_wait_to_buy, R.string.wait_to_buy)

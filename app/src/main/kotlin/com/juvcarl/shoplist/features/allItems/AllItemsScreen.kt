@@ -1,5 +1,6 @@
 package com.juvcarl.shoplist.features.allItems
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -11,9 +12,14 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,7 +37,9 @@ import com.juvcarl.shoplist.ui.ShopListIcon
 import com.juvcarl.shoplist.ui.ShopListIcons
 import com.juvcarl.shoplist.ui.component.ErrorScreen
 import com.juvcarl.shoplist.ui.component.LoadingScreen
+import com.juvcarl.shoplist.ui.component.SearchBar
 import com.juvcarl.shoplist.ui.component.ShopListTopAppBar
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -41,7 +49,7 @@ fun AllItemsRoute(
 ){
     val itemsState: AllItemsUIState by viewModel.itemUIState.collectAsStateWithLifecycle()
 
-    AllItemsScreen(allItemsState = itemsState, addItem = viewModel::addNewItem, deleteItem = viewModel::deleteItem, toggleBuyStatus = viewModel::toggleItem)
+    AllItemsScreen(allItemsState = itemsState, addItem = viewModel::addNewItem, deleteItem = viewModel::deleteItem, toggleBuyStatus = viewModel::toggleItem, searchProduct = viewModel::searchProduct)
 }
 
 
@@ -52,9 +60,11 @@ fun AllItemsScreen(
     allItemsState: AllItemsUIState,
     addItem: (Item) -> Unit,
     deleteItem: (Item) -> Unit,
-    toggleBuyStatus: (Item) -> Unit
+    toggleBuyStatus: (Item) -> Unit,
+    searchProduct: (String) -> Unit
 ){
 
+    var showSearchBar by remember { mutableStateOf(false) }
     var openAddItemDialog by remember { mutableStateOf(false) }
 
     AddNewItemAlertDialog(showDialog = openAddItemDialog, addItem) {
@@ -66,7 +76,11 @@ fun AllItemsScreen(
             topBar = {
                 ShopListTopAppBar(
                     titleRes = R.string.all_items,
-                    navigationIcon = ShopListIcons.Search,
+                    navigationIcon = if(showSearchBar) ShopListIcons.SearchSelected else ShopListIcons.SearchUnselected,
+                    onNavigationClick = {
+                        showSearchBar = !showSearchBar
+                        if(!showSearchBar) searchProduct("")
+                    },
                     actionIcon = ShopListIcons.Add,
                     onActionClick = { openAddItemDialog = true },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -90,13 +104,31 @@ fun AllItemsScreen(
                 when(allItemsState){
                     AllItemsUIState.Error -> ErrorScreen()
                     AllItemsUIState.Loading -> LoadingScreen()
-                    is AllItemsUIState.Success -> AllItemsList(allItemsState.items, addItem, deleteItem, toggleBuyStatus)
+                    is AllItemsUIState.Success -> AllItemsList(allItemsState.items, addItem, deleteItem, toggleBuyStatus, showSearchBar, searchProduct)
+                    AllItemsUIState.EmptyList -> AddNewItem(addItem)
                     else -> {}
                 }
             }
         }
     }
+}
 
+@Composable
+fun AddNewItem(addItem: (Item) -> Unit){
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)
+    ) {
+        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+        Text(
+            stringResource(id = R.string.add_new_item),
+            modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+        )
+        AddNewItemForm(
+            addItem,
+            modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+        )
+    }
 }
 
 @Composable
@@ -123,21 +155,39 @@ fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (Item) -> Unit, onDismis
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun AllItemsList(itemsList: List<Item>, addItem: (Item) -> Unit, deleteItem: (Item) -> Unit, toggleBuyStatus: (Item) -> Unit){
+fun AllItemsList(
+    itemsList: List<Item>,
+    addItem: (Item) -> Unit,
+    deleteItem: (Item) -> Unit,
+    toggleBuyStatus: (Item) -> Unit,
+    showSearchBar: Boolean = false,
+    searchProduct: (String) -> Unit
+){
+    val focusRequester = FocusRequester()
+    val keyboard = LocalSoftwareKeyboardController.current
+
     LazyColumn(modifier = Modifier
         .fillMaxSize()
         .padding(12.dp)){
         item {
             Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
         }
+        if(showSearchBar){
+            item {
+                SearchBar(modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                    searchAction = searchProduct)
+            }
+        }
         if(itemsList.isEmpty()){
             item{
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)) {
-                    Text(stringResource(id = R.string.add_new_item), modifier = Modifier.align(alignment = Alignment.CenterHorizontally))
-                    AddNewItemForm(addItem, modifier = Modifier.align(alignment = Alignment.CenterHorizontally))
+                    Text(stringResource(id = R.string.no_item_found), modifier = Modifier.align(alignment = Alignment.CenterHorizontally))
                 }
             }
         }else{
@@ -148,6 +198,15 @@ fun AllItemsList(itemsList: List<Item>, addItem: (Item) -> Unit, deleteItem: (It
         }
         item {
             Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+        }
+    }
+
+    LaunchedEffect(showSearchBar) {
+        Log.d("ShopList","showKeyboard value = $showSearchBar")
+        if (showSearchBar) {
+            focusRequester.requestFocus()
+            delay(100) // Make sure you have delay here
+            keyboard?.show()
         }
     }
 }
@@ -253,7 +312,7 @@ fun AllItemsExistingItemsScreenPreview(){
         addItem = {},
         deleteItem = {},
         toggleBuyStatus = {}
-    )
+    ) {}
 }
 
 @Preview(showBackground = true)
@@ -271,7 +330,7 @@ fun AllItemsEmptyItemsScreenPreview(){
         addItem = {},
         deleteItem = {},
         toggleBuyStatus = {}
-    )
+    ) {}
 }
 
 @Preview
@@ -289,3 +348,8 @@ fun AllProductsListPreview(){
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun AddItemDisplayPreview(){
+    AddNewItem(addItem = {})
+}
