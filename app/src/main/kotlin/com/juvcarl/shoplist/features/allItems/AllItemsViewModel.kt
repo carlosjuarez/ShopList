@@ -25,16 +25,16 @@ class AllItemsViewModel @Inject constructor(
         .distinctUntilChanged()
         .combine(
             itemsRepository.getItemsStream()
-        ){ sort, items ->
+        ){ search, items ->
             if(items.size > 0){
-                if(!sort.isEmpty()){
-                    AllItemsUIState.Success(items.filter { it.name.contains(sort,true) })
+                if(!search.isEmpty()){
+                    AllItemsUIState.Success(items.filter { it.name.contains(search,true) })
                 }else{
                     AllItemsUIState.Success(items)
                 }
             }else{
-                if(!sort.isEmpty()){
-                    AllItemsUIState.Success(items.filter { it.name.contains(sort,true) })
+                if(!search.isEmpty()){
+                    AllItemsUIState.Success(items.filter { it.name.contains(search,true) })
                 }else{
                     AllItemsUIState.EmptyList
                 }

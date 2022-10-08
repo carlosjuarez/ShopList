@@ -16,15 +16,27 @@ class ShopItemsViewModel @Inject constructor(
     private val itemsRepository: ItemRepository
 ) : ViewModel() {
 
-    val itemUIState : StateFlow<ShopItemsUIState> = flow{
-        itemsRepository.getItemsToBuyStream()
-            .catch {
-                emit(ShopItemsUIState.Error)
-            }
-            .collect{
-                emit(ShopItemsUIState.Success(it))
-            }
-    }.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = ShopItemsUIState.Loading)
+    val searchQuery = MutableStateFlow("")
+
+    val itemUIState : StateFlow<ShopItemsUIState> = searchQuery
+        .debounce(200)
+        .distinctUntilChanged().combine(
+                itemsRepository.getItemsToBuyStream()
+        ){ search,items ->
+                if(search.isNotEmpty()){
+                    ShopItemsUIState.Success(items.filter { it.name.contains(search) })
+                }else{
+                    ShopItemsUIState.Success(items)
+                }
+        }.catch {
+                ShopItemsUIState.Error
+        }.stateIn(scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = ShopItemsUIState.Loading)
+
+    fun searchItem(name: String){
+        searchQuery.value = name
+    }
 
 }
 

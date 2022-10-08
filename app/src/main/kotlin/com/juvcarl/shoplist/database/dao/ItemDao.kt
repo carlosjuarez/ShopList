@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ItemDao {
     @Query(
-        value = """SELECT * FROM items ORDER BY date DESC"""
+        value = """SELECT * FROM items ORDER BY name ASC"""
     )
     fun getItems(): Flow<List<ItemEntity>>
 
@@ -21,12 +21,12 @@ interface ItemDao {
     fun searchItemByName(searchQuery: String): Flow<List<ItemEntity>>
 
     @Query(
-        value = """SELECT * FROM items where buyAgain = 1 ORDER BY date DESC"""
+        value = """SELECT * FROM items where buyAgain = 1 ORDER BY name ASC"""
     )
     fun getItemsToBuy(): Flow<List<ItemEntity>>
 
     @Query(
-        value = """SELECT * FROM items where buyAgain = 0 ORDER BY date DESC"""
+        value = """SELECT * FROM items where buyAgain = 0 ORDER BY name ASC"""
     )
     fun getExistingItems(): Flow<List<ItemEntity>>
 
