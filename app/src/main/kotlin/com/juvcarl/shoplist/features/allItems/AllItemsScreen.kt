@@ -35,10 +35,7 @@ import kotlinx.datetime.Clock
 import com.juvcarl.shoplist.R
 import com.juvcarl.shoplist.ui.ShopListIcon
 import com.juvcarl.shoplist.ui.ShopListIcons
-import com.juvcarl.shoplist.ui.component.ErrorScreen
-import com.juvcarl.shoplist.ui.component.LoadingScreen
-import com.juvcarl.shoplist.ui.component.SearchBar
-import com.juvcarl.shoplist.ui.component.ShopListTopAppBar
+import com.juvcarl.shoplist.ui.component.*
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -230,9 +227,9 @@ fun ItemCard(item: Item, deleteItem: (Item) -> Unit, toggleBuyStatus: (Item) -> 
                 .fillMaxWidth()
                 .weight(0.8f)
         ) {
-            Text(text = item.name, style = MaterialTheme.typography.bodyLarge)
+            ProductName(productName = item.name)
             Spacer(modifier = Modifier.padding(4.dp))
-            Text(text = item.type, style = MaterialTheme.typography.bodyMedium)
+            ProductTag(tag = item.type)
         }
         ShopListIcon(icon = if (item.buyAgain) ShopListIcons.BuyAgain else ShopListIcons.WaitToBuy,
             modifier = Modifier

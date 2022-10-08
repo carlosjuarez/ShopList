@@ -17,9 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.juvcarl.shoplist.R
 import com.juvcarl.shoplist.data.model.Item
 import com.juvcarl.shoplist.ui.ShopListIcons
-import com.juvcarl.shoplist.ui.component.ErrorScreen
-import com.juvcarl.shoplist.ui.component.LoadingScreen
-import com.juvcarl.shoplist.ui.component.ShopListTopAppBar
+import com.juvcarl.shoplist.ui.component.*
 import com.juvcarl.shoplist.ui.theme.ShopListTheme
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -111,9 +109,9 @@ fun ItemCard(item: Item){
                 .fillMaxWidth()
                 .weight(0.8f)
         ) {
-            Text(text = item.name, style = MaterialTheme.typography.titleLarge)
+            ProductName(productName = item.name)
             Spacer(modifier = Modifier.padding(4.dp))
-            Text(text = item.type, style = MaterialTheme.typography.titleMedium)
+            ProductTag(tag = item.type)
         }
     }
 }
