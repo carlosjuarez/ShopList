@@ -16,7 +16,6 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.juvcarl.shoplist.R
 import com.juvcarl.shoplist.data.model.Item
-import com.juvcarl.shoplist.features.allItems.*
 import com.juvcarl.shoplist.ui.ShopListIcons
 import com.juvcarl.shoplist.ui.component.ErrorScreen
 import com.juvcarl.shoplist.ui.component.LoadingScreen
@@ -42,7 +41,7 @@ fun ShopItemsScreen(shopItemsState: ShopItemsUIState){
             topBar = {
                 ShopListTopAppBar(
                     titleRes = R.string.shop_list,
-                    navigationIcon = ShopListIcons.Search,
+                    navigationIcon = ShopListIcons.SearchUnselected,
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = Color.Transparent
                     ),

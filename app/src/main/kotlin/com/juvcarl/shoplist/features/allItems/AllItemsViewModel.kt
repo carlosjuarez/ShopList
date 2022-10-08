@@ -21,15 +21,23 @@ class AllItemsViewModel @Inject constructor(
     var searchQuery = MutableStateFlow("")
 
     val itemUIState : StateFlow<AllItemsUIState> = searchQuery
-        .debounce(50)
+        .debounce(100)
         .distinctUntilChanged()
         .combine(
             itemsRepository.getItemsStream()
         ){ sort, items ->
-            if(!sort.isEmpty()){
-                AllItemsUIState.Success(items.filter { it.name.contains(sort,true) })
+            if(items.size > 0){
+                if(!sort.isEmpty()){
+                    AllItemsUIState.Success(items.filter { it.name.contains(sort,true) })
+                }else{
+                    AllItemsUIState.Success(items)
+                }
             }else{
-                AllItemsUIState.Success(items)
+                if(!sort.isEmpty()){
+                    AllItemsUIState.Success(items.filter { it.name.contains(sort,true) })
+                }else{
+                    AllItemsUIState.EmptyList
+                }
             }
         }.catch {
             AllItemsUIState.Error
@@ -47,7 +55,6 @@ class AllItemsViewModel @Inject constructor(
 
     fun toggleItem(item: Item){
         viewModelScope.launch {
-            searchQuery.value = "s"
             val updatedItem = item.copy(buyAgain = !item.buyAgain)
             itemsRepository.updateitem(updatedItem)
         }
@@ -63,6 +70,7 @@ class AllItemsViewModel @Inject constructor(
 
 sealed interface AllItemsUIState{
     data class Success(val items: List<Item>) : AllItemsUIState
+    object EmptyList : AllItemsUIState
     object Loading : AllItemsUIState
     object Error : AllItemsUIState
 }
