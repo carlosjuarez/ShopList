@@ -1,6 +1,7 @@
 package com.juvcarl.shoplist.repository
 
 import com.juvcarl.shoplist.data.model.Item
+import com.juvcarl.shoplist.data.model.asEntity
 import com.juvcarl.shoplist.database.dao.ItemDao
 import com.juvcarl.shoplist.database.model.ItemEntity
 import com.juvcarl.shoplist.database.model.asModel
@@ -20,23 +21,11 @@ class ItemRepositoryImpl @Inject constructor(
     override fun getExistingItems(): Flow<List<Item>> = itemsDao.getExistingItems().map { it.map(ItemEntity::asModel)}
 
     override suspend fun insertItem(item: Item) {
-        itemsDao.insertItem(
-            ItemEntity(
-            name = item.name,
-            date = item.date,
-            buyAgain = item.buyAgain,
-            type = item.type)
-        )
+        itemsDao.insertItem(item.asEntity())
     }
 
     override suspend fun updateitem(item: Item) {
-        itemsDao.insertItem(ItemEntity(
-            id = item.id,
-            name = item.name,
-            date = item.date,
-            buyAgain = item.buyAgain,
-            type = item.type)
-        )
+        itemsDao.updateitem(item.asEntity())
     }
 
     override suspend fun deleteItem(id: Long) {
