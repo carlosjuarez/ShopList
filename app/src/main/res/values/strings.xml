@@ -7,7 +7,7 @@
     <string name="product_type_basic">Basic</string>
     <string name="product_type_special">Special</string>
     <string name="product_type">Type</string>
-    <string name="buy_now">Buy Now?</string>
+    <string name="buy_now_question">Buy Now?</string>
     <string name="add">Add</string>
     <string name="cd_buyAgain">Buy Again</string>
     <string name="cd_wait_to_buy">Wait to buy</string>
@@ -23,4 +23,10 @@
     <string name="search_label">Search Product</string>
     <string name="search_hint">Product...</string>
     <string name="no_item_found">There are no items with that name</string>
+    <string name="dont_buy">Don\'t buy</string>
+    <string name="buy">Buy now</string>
+    <string name="buy_now">Buy Now</string>
+    <string name="bought">Bought</string>
+    <string name="add_to_list">Add</string>
+    <string name="remove_from_list">Remove</string>
 </resources>

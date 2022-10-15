@@ -16,7 +16,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -33,7 +32,7 @@ import com.juvcarl.shoplist.data.model.Item
 import com.juvcarl.shoplist.ui.theme.ShopListTheme
 import kotlinx.datetime.Clock
 import com.juvcarl.shoplist.R
-import com.juvcarl.shoplist.ui.ShopListIcon
+import com.juvcarl.shoplist.ui.ShopListIconWithLabel
 import com.juvcarl.shoplist.ui.ShopListIcons
 import com.juvcarl.shoplist.ui.component.*
 import kotlinx.coroutines.delay
@@ -231,7 +230,12 @@ fun ItemCard(item: Item, deleteItem: (Item) -> Unit, toggleBuyStatus: (Item) -> 
             Spacer(modifier = Modifier.padding(4.dp))
             ProductTag(tag = item.type)
         }
-        ShopListIcon(icon = if (item.buyAgain) ShopListIcons.BuyAgain else ShopListIcons.WaitToBuy,
+
+        ShopListIconWithLabel(icon = if (item.buyAgain) ShopListIcons.BuyAgain else ShopListIcons.WaitToBuy,
+            {
+                Text(text = stringResource(id = if (item.buyAgain) R.string.add_to_list else R.string.remove_from_list),
+                    style = MaterialTheme.typography.labelSmall)
+            },
             modifier = Modifier
                 .weight(0.2f)
                 .clickable {
@@ -279,7 +283,7 @@ fun AddNewItemForm(addItem: (Item) -> Unit, modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.Start
     ){
         Checkbox(checked = buyNow, onCheckedChange = { buyNow = !buyNow })
-        Text(stringResource(id = R.string.buy_now))
+        Text(stringResource(id = R.string.buy_now_question))
     }
     Spacer(modifier = Modifier.padding(4.dp))
     Button(

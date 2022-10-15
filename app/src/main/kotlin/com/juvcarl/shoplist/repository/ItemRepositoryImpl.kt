@@ -25,7 +25,9 @@ class ItemRepositoryImpl @Inject constructor(
             name = item.name,
             date = item.date,
             buyAgain = item.buyAgain,
-            type = item.type)
+            type = item.type,
+            buyQty = item.buyQty,
+            buyStatus = item.buyStatus)
         )
     }
 
@@ -35,7 +37,9 @@ class ItemRepositoryImpl @Inject constructor(
             name = item.name,
             date = item.date,
             buyAgain = item.buyAgain,
-            type = item.type)
+            type = item.type,
+            buyQty = item.buyQty,
+            buyStatus = item.buyStatus)
         )
     }
 
