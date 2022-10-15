@@ -15,7 +15,7 @@ android {
         versionName = "0.0.1" // X.Y.Z; X = Major, Y = minor, Z = Patch level
 
         // Custom test runner to set up Hilt dependency graph
-        testInstrumentationRunner = "com.juvcarl.shoplist.testing.ShopListRunner"
+        testInstrumentationRunner = "com.juvcarl.shoplist.testing.ShopListTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -62,6 +62,7 @@ android {
             isIncludeAndroidResources = true
         }
     }
+    namespace = "com.juvcarl.shoplist"
 }
 
 dependencies {
