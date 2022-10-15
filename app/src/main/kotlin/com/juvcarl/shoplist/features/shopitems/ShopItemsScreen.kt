@@ -146,7 +146,9 @@ fun ItemCard(item: Item){
         ) {
             ProductName(productName = item.name)
             Spacer(modifier = Modifier.padding(4.dp))
-            ProductTag(tag = item.type)
+            item.type?.let {
+                ProductTag(tag = item.type)
+            }
         }
     }
 }

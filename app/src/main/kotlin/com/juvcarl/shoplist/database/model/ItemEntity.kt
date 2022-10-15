@@ -13,9 +13,9 @@ data class ItemEntity(
     val name: String,
     val date: Instant,
     val buyAgain: Boolean,
-    val type: String,
-    val buyQty: Int?,
-    val buyStatus: String?
+    val type: String?,
+    val buyQty: Int? = null,
+    val buyStatus: String? = null
 )
 
 fun ItemEntity.asModel() = Item(

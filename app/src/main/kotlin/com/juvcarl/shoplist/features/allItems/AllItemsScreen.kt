@@ -228,7 +228,9 @@ fun ItemCard(item: Item, deleteItem: (Item) -> Unit, toggleBuyStatus: (Item) -> 
         ) {
             ProductName(productName = item.name)
             Spacer(modifier = Modifier.padding(4.dp))
-            ProductTag(tag = item.type)
+            item.type?.let {
+                ProductTag(tag = item.type)
+            }
         }
 
         ShopListIconWithLabel(icon = if (item.buyAgain) ShopListIcons.BuyAgain else ShopListIcons.WaitToBuy,
