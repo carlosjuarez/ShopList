@@ -146,8 +146,7 @@ fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (Item) -> Unit, onDismis
                 }
 
             },
-            confirmButton = {},
-            containerColor = Color.White,
+            confirmButton = {}
         )
     }
 }
