@@ -1,9 +1,11 @@
 package com.juvcarl.shoplist.features.shopitems
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,16 +16,22 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.juvcarl.shoplist.R
+import com.juvcarl.shoplist.data.model.BUYSTATUS
 import com.juvcarl.shoplist.data.model.Item
+import com.juvcarl.shoplist.ui.Icon
+import com.juvcarl.shoplist.ui.ShopListIconWithLabel
 import com.juvcarl.shoplist.ui.ShopListIcons
 import com.juvcarl.shoplist.ui.component.*
 import com.juvcarl.shoplist.ui.theme.ShopListTheme
 import kotlinx.coroutines.delay
+import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -33,14 +41,13 @@ fun ShopItemsRoute(
 ){
     val itemsState: ShopItemsUIState by viewModel.itemUIState.collectAsStateWithLifecycle()
 
-    ShopItemsScreen(shopItemsState = itemsState, viewModel::searchItem)
+    ShopItemsScreen(shopItemsState = itemsState, viewModel::searchItem, viewModel::changeBuyStatus, viewModel::updateBuyQty)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun ShopItemsScreen(shopItemsState: ShopItemsUIState, searchProduct: (String) -> Unit = {}){
+fun ShopItemsScreen(shopItemsState: ShopItemsUIState, searchProduct: (String) -> Unit = {}, changeBuyStatus: (Item) -> Unit = {}, updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> }){
     var showSearchBar by remember { mutableStateOf(false) }
-
 
     ShopListTheme {
         Scaffold (
@@ -72,7 +79,7 @@ fun ShopItemsScreen(shopItemsState: ShopItemsUIState, searchProduct: (String) ->
                 when(shopItemsState){
                     ShopItemsUIState.Error -> ErrorScreen()
                     ShopItemsUIState.Loading -> LoadingScreen()
-                    is ShopItemsUIState.Success -> ShopItemsList(shopItemsState.items, showSearchBar, searchProduct)
+                    is ShopItemsUIState.Success -> ShopItemsList(shopItemsState.items, showSearchBar, searchProduct, changeBuyStatus, updateBuyQty)
                 }
             }
         }
@@ -81,7 +88,13 @@ fun ShopItemsScreen(shopItemsState: ShopItemsUIState, searchProduct: (String) ->
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ShopItemsList(itemsList: List<Item>, showSearchBar: Boolean, searchProduct: (String) -> Unit) {
+fun ShopItemsList(
+    itemsList: List<Item>,
+    showSearchBar: Boolean,
+    searchProduct: (String) -> Unit,
+    changeBuyStatus: (Item) -> Unit = {},
+    updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> }
+) {
 
     val focusRequester = FocusRequester()
     val keyboard = LocalSoftwareKeyboardController.current
@@ -111,7 +124,11 @@ fun ShopItemsList(itemsList: List<Item>, showSearchBar: Boolean, searchProduct: 
             }
         }else{
             items(itemsList){ product ->
-                ItemCard(item = product)
+
+                var showQtyForm by remember{ mutableStateOf(false) }
+                ItemCard(item = product, changeBuyStatus, updateBuyQty, showQtyForm) {
+                    showQtyForm = !showQtyForm
+                }
                 Divider()
             }
         }
@@ -131,24 +148,202 @@ fun ShopItemsList(itemsList: List<Item>, showSearchBar: Boolean, searchProduct: 
 }
 
 @Composable
-fun ItemCard(item: Item){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ){
-        Column(
+fun ItemCard(
+    item: Item,
+    ChangeBuyStatus: (Item) -> Unit = {},
+    updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> },
+    showQtyForm: Boolean,
+    toggleFormVisibility: () -> Unit = {}
+){
+    Column {
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.8f)
-        ) {
-            ProductName(productName = item.name)
-            Spacer(modifier = Modifier.padding(4.dp))
-            item.type?.let {
-                ProductTag(tag = item.type)
+                .padding(8.dp).clickable {
+                    toggleFormVisibility()
+                },
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.8f)
+            ) {
+                ProductName(productName = item.name)
+                Spacer(modifier = Modifier.padding(4.dp))
+                item.type?.let {
+                    ProductTag(tag = item.type)
+                }
+            }
+
+            Text(text = if(item.buyQty != null && item.buyQty > 0) item.buyQty.toStringDecFormatted() else "",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .weight(0.3f))
+
+
+            val iconDescription: Pair<Icon,Int> = when(item.buyStatus){
+                BUYSTATUS.BUY.name -> Pair(ShopListIcons.BuyNow, R.string.buy_now)
+                BUYSTATUS.BOUGHT.name -> Pair(ShopListIcons.Bought, R.string.bought)
+                BUYSTATUS.WAIT_TO_BUY.name -> Pair(ShopListIcons.WaitToBuy, R.string.wait_to_buy)
+                else -> Pair(ShopListIcons.WaitToBuy, R.string.wait_to_buy)
+            }
+
+            ShopListIconWithLabel(icon = iconDescription.first,
+                {
+                    Text(text = stringResource(id = iconDescription.second),
+                        style = MaterialTheme.typography.labelSmall)
+                },
+                modifier = Modifier
+                    .weight(0.3f)
+                    .clickable {
+                        ChangeBuyStatus(item)
+                    }
+            )
+        }
+        if(showQtyForm){
+            Row {
+                UpdateQtyForm(item, updateBuyQty = updateBuyQty, toggleFormVisibility = toggleFormVisibility)
             }
         }
     }
+}
+
+
+@Composable
+fun UpdateQtyForm(item: Item, modifier: Modifier = Modifier, updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> }, toggleFormVisibility: () -> Unit = {}) {
+
+    var qty by remember { mutableStateOf("") }
+    var measure by remember { mutableStateOf("" ) }
+
+    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = qty,
+            onValueChange = { qty = it },
+            label = { Text(text = stringResource(id = R.string.quantity)) })
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = measure,
+            onValueChange = { measure = it },
+            label = { Text(text = stringResource(id = R.string.measure)) })
+
+        Button(
+            onClick = {
+                val qtyData = qty.toDoubleOrNull()
+
+                if(qtyData != null){
+                    updateBuyQty(item, qty.toDouble(), measure)
+                    toggleFormVisibility()
+                }
+            },
+            shape = RoundedCornerShape(20)
+        ) {
+            Text(stringResource(id = R.string.update_qty))
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ItemCardPreviw(){
+    val item = Item(id = 0,
+        name = "test",
+        date = Clock.System.now(),
+        buyAgain = true,
+        buyQty = 0.0,
+        type = "test",
+        buyStatus = BUYSTATUS.BUY.name)
+    ItemCard(item = item, showQtyForm = false)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShopItemsListPreview(){
+
+    val listItems = listOf(
+        Item(id = 0,
+        name = "test",
+        date = Clock.System.now(),
+        buyAgain = true,
+        buyQty = 100.0,
+        type = "test",
+        buyStatus = BUYSTATUS.BUY.name),
+        Item(id = 1,
+            name = "test1",
+            date = Clock.System.now(),
+            buyAgain = true,
+            buyQty = 21.0,
+            type = "test",
+            buyStatus = BUYSTATUS.BOUGHT.name),
+        Item(id = 0,
+            name = "test2",
+            date = Clock.System.now(),
+            buyAgain = true,
+            buyQty = 0.0,
+            type = "test",
+            buyStatus = BUYSTATUS.WAIT_TO_BUY.name)
+
+    )
+    ShopItemsList(
+        itemsList = listItems,
+        showSearchBar = false,
+        searchProduct = {},
+        updateBuyQty = { item: Item, d: Double, s: String? -> }
+    )
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShopItemsListWithSearchBarPreview(){
+
+    val listItems = listOf(
+        Item(id = 0,
+            name = "test",
+            date = Clock.System.now(),
+            buyAgain = true,
+            buyQty = 0.0,
+            type = "test",
+            buyStatus = BUYSTATUS.BUY.name),
+        Item(id = 1,
+            name = "test1",
+            date = Clock.System.now(),
+            buyAgain = true,
+            buyQty = 0.0,
+            type = "test",
+            buyStatus = BUYSTATUS.BUY.name),
+        Item(id = 0,
+            name = "test2",
+            date = Clock.System.now(),
+            buyAgain = true,
+            buyQty = 0.0,
+            type = "test",
+            buyStatus = BUYSTATUS.BUY.name)
+
+    )
+    ShopItemsList(
+        itemsList = listItems,
+        showSearchBar = true,
+        searchProduct = {},
+        updateBuyQty = { item: Item, d: Double, s: String? -> }
+    )
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UpdateQtyFormPreview(){
+    val item = Item(id = 0,
+        name = "test2",
+        date = Clock.System.now(),
+        buyAgain = true,
+        buyQty = 0.0,
+        type = "test",
+        buyStatus = BUYSTATUS.BUY.name)
+    UpdateQtyForm(item)
 }

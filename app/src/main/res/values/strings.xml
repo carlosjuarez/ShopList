@@ -29,4 +29,7 @@
     <string name="bought">Bought</string>
     <string name="add_to_list">Add</string>
     <string name="remove_from_list">Remove</string>
+    <string name="quantity">Quantity</string>
+    <string name="measure">Units</string>
+    <string name="update_qty">Update Quantity</string>
 </resources>

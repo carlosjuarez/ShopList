@@ -7,20 +7,23 @@ data class Item(val id: Long = 0L,
                 val name: String,
                 val date: Instant,
                 val buyAgain: Boolean,
-                val type: String?,
-                val buyQty: Int? = null,
-                val buyStatus: String? = if(buyAgain) BUY_STATUS.BUY.name else BUY_STATUS.BOUGHT.name)
+                val type: String? = null,
+                val buyQty: Double? = null,
+                val buyStatus: String? = if(buyAgain) BUYSTATUS.BUY.name else BUYSTATUS.BOUGHT.name)
 
-enum class BUY_STATUS(literal: String){
-    BUY("buy"),
-    BOUGHT("bought"),
-    WAIT_TO_BUY("wait")
+enum class BUYSTATUS{
+    BUY,
+    BOUGHT,
+    WAIT_TO_BUY
 }
 
 fun Item.asEntity(): ItemEntity{
     return ItemEntity(
+        id = this.id,
         name = this.name,
         date = this.date,
         buyAgain = this.buyAgain,
-        type = this.type)
+        type = this.type,
+        buyQty = this.buyQty,
+        buyStatus = this.buyStatus)
 }
