@@ -3,6 +3,7 @@ package com.juvcarl.shoplist.features.shopitems
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.juvcarl.shoplist.data.model.BUYSTATUS
 import com.juvcarl.shoplist.data.model.Item
 import com.juvcarl.shoplist.repository.ItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,6 +37,25 @@ class ShopItemsViewModel @Inject constructor(
 
     fun searchItem(name: String){
         searchQuery.value = name
+    }
+
+    fun changeBuyStatus(item: Item){
+        val newStatus = when(item.buyStatus){
+            BUYSTATUS.BUY.name -> BUYSTATUS.BOUGHT
+            BUYSTATUS.BOUGHT.name -> BUYSTATUS.WAIT_TO_BUY
+            BUYSTATUS.WAIT_TO_BUY.name -> BUYSTATUS.BUY
+            else -> BUYSTATUS.BUY
+        }
+        viewModelScope.launch {
+            itemsRepository.updateitem(item.copy(buyStatus = newStatus.name))
+        }
+    }
+
+    fun updateBuyQty(item: Item, qty: Double, measure: String?){
+        val updatedItem = item.copy(buyQty = qty)
+        viewModelScope.launch {
+            itemsRepository.updateitem(updatedItem)
+        }
     }
 
 }

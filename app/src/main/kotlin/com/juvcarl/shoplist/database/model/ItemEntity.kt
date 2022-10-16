@@ -1,9 +1,7 @@
 package com.juvcarl.shoplist.database.model
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.juvcarl.shoplist.data.model.BUY_STATUS
 import com.juvcarl.shoplist.data.model.Item
 import kotlinx.datetime.Instant
 
@@ -14,7 +12,7 @@ data class ItemEntity(
     val date: Instant,
     val buyAgain: Boolean,
     val type: String?,
-    val buyQty: Int? = null,
+    val buyQty: Double? = null,
     val buyStatus: String? = null
 )
 

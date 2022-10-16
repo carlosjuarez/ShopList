@@ -100,7 +100,7 @@ fun AllItemsScreen(
                 when(allItemsState){
                     AllItemsUIState.Error -> ErrorScreen()
                     AllItemsUIState.Loading -> LoadingScreen()
-                    is AllItemsUIState.Success -> AllItemsList(allItemsState.items, addItem, deleteItem, toggleBuyStatus, showSearchBar, searchProduct)
+                    is AllItemsUIState.Success -> AllItemsList(allItemsState.items, deleteItem, toggleBuyStatus, showSearchBar, searchProduct)
                     AllItemsUIState.EmptyList -> AddNewItem(addItem)
                     else -> {}
                 }
@@ -146,7 +146,8 @@ fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (Item) -> Unit, onDismis
                 }
 
             },
-            confirmButton = {}
+            confirmButton = {},
+            containerColor = Color.White,
         )
     }
 }
@@ -155,7 +156,6 @@ fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (Item) -> Unit, onDismis
 @Composable
 fun AllItemsList(
     itemsList: List<Item>,
-    addItem: (Item) -> Unit,
     deleteItem: (Item) -> Unit,
     toggleBuyStatus: (Item) -> Unit,
     showSearchBar: Boolean = false,
@@ -264,6 +264,7 @@ fun AddNewItemForm(addItem: (Item) -> Unit, modifier: Modifier = Modifier) {
     Spacer(modifier = Modifier.padding(4.dp))
     Box(modifier = Modifier.fillMaxWidth()){
         Text(if(type.isEmpty()) stringResource(id = R.string.product_type) else type, modifier = Modifier
+            .fillMaxWidth()
             .align(alignment = Alignment.CenterStart)
             .clickable { expanded = true })
         IconButton(onClick = { expanded = true }, modifier = Modifier.align(alignment = Alignment.BottomEnd)) {
