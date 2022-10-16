@@ -6,6 +6,8 @@ plugins {
     id("jacoco")
     alias(libs.plugins.ksp)
     id("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -25,9 +27,6 @@ android {
     }
 
     buildTypes {
-        val debug by getting {
-            applicationIdSuffix = ".debug"
-        }
         val release by getting {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -108,6 +107,10 @@ dependencies {
     api(libs.androidx.hilt.navigation.compose)
 
     debugApi(libs.androidx.compose.ui.testManifest)
+
+    implementation(libs.firebase.bom)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     // androidx.test is forcing JUnit, 4.12. This forces it to use 4.13
     configurations.configureEach {
