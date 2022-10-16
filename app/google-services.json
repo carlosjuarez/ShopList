@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1069646689777-q4i27o7ran4r4kr25is94dqp9fd3i8sh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.juvcarl.shoplist",
+            "certificate_hash": "0817e75980b56895d5ff28abf9d79891b68a1cb1"
+          }
+        },
+        {
           "client_id": "1069646689777-v6nsktsapoh8vkdiqkg79beq9hpks0ru.apps.googleusercontent.com",
           "client_type": 3
         }

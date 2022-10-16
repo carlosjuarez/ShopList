@@ -1,6 +1,7 @@
 package com.juvcarl.shoplist
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -42,12 +43,7 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window,false)
 
         setContent {
-            Button(onClick = {
-                throw java.lang.RuntimeException("test crash")
-            }) {
-                Text("Send crashlytics error")
-            }
-            //ShopListApp(windowSizeClass = calculateWindowSizeClass(activity = this))
+            ShopListApp(windowSizeClass = calculateWindowSizeClass(activity = this))
         }
     }
 
