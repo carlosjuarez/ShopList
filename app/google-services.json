@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1069646689777",
+    "project_id": "shoplist-8e2c0",
+    "storage_bucket": "shoplist-8e2c0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069646689777:android:7f758e1dae566158884050",
+        "android_client_info": {
+          "package_name": "com.juvcarl.shoplist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069646689777-q4i27o7ran4r4kr25is94dqp9fd3i8sh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.juvcarl.shoplist",
+            "certificate_hash": "0817e75980b56895d5ff28abf9d79891b68a1cb1"
+          }
+        },
+        {
+          "client_id": "1069646689777-v6nsktsapoh8vkdiqkg79beq9hpks0ru.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6SPamu7i1gtXt_ZQVdaNEdfCg6JqmkR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069646689777-v6nsktsapoh8vkdiqkg79beq9hpks0ru.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

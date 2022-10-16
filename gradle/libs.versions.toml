@@ -50,6 +50,11 @@ room = "2.4.3"
 secrets = "2.0.1"
 spotless = "6.7.2"
 turbine = "0.8.0"
+firebase-bom = "31.0.0"
+firebase-crashlytics = "18.3.0"
+firebase-crashlytics-gradle = "2.9.2"
+firebase-analytics = "21.2.0"
+gms-googleServices = "4.3.14"
 
 [libraries]
 accompanist-flowlayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
@@ -118,6 +123,11 @@ retrofit-kotlin-serialization = { group = "com.jakewharton.retrofit", name = "re
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = 'firebase-analytics' }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = 'firebase-crashlytics' }
+firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
+gms-googleServices = { module = "com.google.gms:google-services", version.ref = "gms-googleServices" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -135,3 +145,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle"}
+gms-googleServices = { id = "com.google.gms.google-services", version.ref = "gms-googleServices"}
