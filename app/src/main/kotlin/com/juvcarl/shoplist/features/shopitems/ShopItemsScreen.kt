@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.juvcarl.shoplist.R
 import com.juvcarl.shoplist.data.model.BUYSTATUS
 import com.juvcarl.shoplist.data.model.Item
+import com.juvcarl.shoplist.extensions.StringWithoutZeroDecimal
 import com.juvcarl.shoplist.ui.Icon
 import com.juvcarl.shoplist.ui.ShopListIconWithLabel
 import com.juvcarl.shoplist.ui.ShopListIcons
@@ -177,7 +178,7 @@ fun ItemCard(
                 }
             }
 
-            Text(text = if(item.buyQty != null && item.buyQty > 0) item.buyQty.toStringDecFormatted() else "",
+            Text(text = if(item.buyQty != null && item.buyQty > 0) item.buyQty.StringWithoutZeroDecimal() else "",
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.End,
                 modifier = Modifier
@@ -220,17 +221,21 @@ fun UpdateQtyForm(item: Item, modifier: Modifier = Modifier, updateBuyQty: (Item
     var measure by remember { mutableStateOf("" ) }
 
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = qty,
-            onValueChange = { qty = it },
-            label = { Text(text = stringResource(id = R.string.quantity)) })
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+        ){
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().weight(0.5f).padding(horizontal = 8.dp),
+                value = qty,
+                onValueChange = { qty = it },
+                label = { Text(text = stringResource(id = R.string.quantity)) })
 
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = measure,
-            onValueChange = { measure = it },
-            label = { Text(text = stringResource(id = R.string.measure)) })
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().weight(0.5f).padding(horizontal = 8.dp),
+                value = measure,
+                onValueChange = { measure = it },
+                label = { Text(text = stringResource(id = R.string.measure)) })
+        }
 
         Button(
             onClick = {
@@ -241,7 +246,7 @@ fun UpdateQtyForm(item: Item, modifier: Modifier = Modifier, updateBuyQty: (Item
                     toggleFormVisibility()
                 }
             },
-            shape = RoundedCornerShape(20)
+            shape = RoundedCornerShape(20), modifier = Modifier.padding(vertical = 8.dp)
         ) {
             Text(stringResource(id = R.string.update_qty))
         }
