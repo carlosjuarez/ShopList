@@ -40,14 +40,22 @@ fun ShopItemsRoute(
     modifier: Modifier = Modifier,
     viewModel: ShopItemsViewModel = hiltViewModel()
 ){
-    val itemsState: ShopItemsUIState by viewModel.itemUIState.collectAsStateWithLifecycle()
+    val itemsState: ShopItemsUIState by viewModel.itemsUIState.collectAsStateWithLifecycle()
+    val expandedItemsList: List<Long> by viewModel.expandedItemList.collectAsStateWithLifecycle()
 
-    ShopItemsScreen(shopItemsState = itemsState, viewModel::searchItem, viewModel::changeBuyStatus, viewModel::updateBuyQty)
+    ShopItemsScreen(shopItemsState = itemsState, expandedItemsList, viewModel::searchItem, viewModel::changeBuyStatus, viewModel::updateBuyQty, viewModel::toggleExpandedListItem)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun ShopItemsScreen(shopItemsState: ShopItemsUIState, searchProduct: (String) -> Unit = {}, changeBuyStatus: (Item) -> Unit = {}, updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> }){
+fun ShopItemsScreen(
+    shopItemsState: ShopItemsUIState,
+    expandedItemsList: List<Long>,
+    searchProduct: (String) -> Unit = {},
+    changeBuyStatus: (Item) -> Unit = {},
+    updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> },
+    toggleExpansion: (Long) -> Unit
+){
     var showSearchBar by remember { mutableStateOf(false) }
 
     ShopListTheme {
@@ -80,7 +88,7 @@ fun ShopItemsScreen(shopItemsState: ShopItemsUIState, searchProduct: (String) ->
                 when(shopItemsState){
                     ShopItemsUIState.Error -> ErrorScreen()
                     ShopItemsUIState.Loading -> LoadingScreen()
-                    is ShopItemsUIState.Success -> ShopItemsList(shopItemsState.items, showSearchBar, searchProduct, changeBuyStatus, updateBuyQty)
+                    is ShopItemsUIState.Success -> ShopItemsList(shopItemsState.items, expandedItemsList, showSearchBar, searchProduct, changeBuyStatus, updateBuyQty, toggleExpansion)
                 }
             }
         }
@@ -91,10 +99,12 @@ fun ShopItemsScreen(shopItemsState: ShopItemsUIState, searchProduct: (String) ->
 @Composable
 fun ShopItemsList(
     itemsList: List<Item>,
+    expandedItemsList: List<Long> = listOf(),
     showSearchBar: Boolean,
     searchProduct: (String) -> Unit,
     changeBuyStatus: (Item) -> Unit = {},
-    updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> }
+    updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> },
+    toggleExpansion: (Long) -> Unit = {}
 ) {
 
     val focusRequester = FocusRequester()
@@ -126,9 +136,9 @@ fun ShopItemsList(
         }else{
             items(itemsList){ product ->
 
-                var showQtyForm by remember{ mutableStateOf(false) }
+                val showQtyForm = expandedItemsList.contains(product.id)
                 ItemCard(item = product, changeBuyStatus, updateBuyQty, showQtyForm) {
-                    showQtyForm = !showQtyForm
+                    toggleExpansion(product.id)
                 }
                 Divider()
             }
@@ -160,7 +170,8 @@ fun ItemCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp).clickable {
+                .padding(8.dp)
+                .clickable {
                     toggleFormVisibility()
                 },
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -222,16 +233,24 @@ fun UpdateQtyForm(item: Item, modifier: Modifier = Modifier, updateBuyQty: (Item
 
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp)
         ){
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth().weight(0.5f).padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f)
+                    .padding(horizontal = 8.dp),
                 value = qty,
                 onValueChange = { qty = it },
                 label = { Text(text = stringResource(id = R.string.quantity)) })
 
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth().weight(0.5f).padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f)
+                    .padding(horizontal = 8.dp),
                 value = measure,
                 onValueChange = { measure = it },
                 label = { Text(text = stringResource(id = R.string.measure)) })
@@ -296,9 +315,11 @@ fun ShopItemsListPreview(){
     )
     ShopItemsList(
         itemsList = listItems,
+        expandedItemsList = listOf(),
         showSearchBar = false,
         searchProduct = {},
-        updateBuyQty = { item: Item, d: Double, s: String? -> }
+        updateBuyQty = { item: Item, d: Double, s: String? -> },
+        toggleExpansion = {}
     )
 
 }
@@ -333,9 +354,11 @@ fun ShopItemsListWithSearchBarPreview(){
     )
     ShopItemsList(
         itemsList = listItems,
+        expandedItemsList = listOf(),
         showSearchBar = true,
         searchProduct = {},
-        updateBuyQty = { item: Item, d: Double, s: String? -> }
+        updateBuyQty = { item: Item, d: Double, s: String? -> },
+        toggleExpansion = {}
     )
 
 }

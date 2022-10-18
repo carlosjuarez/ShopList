@@ -13,16 +13,23 @@ import com.juvcarl.shoplist.ui.ShopListIcon
 
 @Composable
 fun ShopListTopAppBar(
-    @StringRes titleRes: Int,
+    @StringRes titleRes: Int? = null,
     navigationIcon: Icon? = null,
     actionIcon: Icon? = null,
     modifier: Modifier = Modifier,
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
     onNavigationClick: () -> Unit = {},
-    onActionClick: () -> Unit = {}
+    onActionClick: () -> Unit = {},
+    titleString: String? = null
 ){
     CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(id = titleRes)) },
+        title = {
+            if(titleRes != null){
+                Text(text = stringResource(id = titleRes))
+            }else{
+                Text(text = titleString ?: "")
+            }
+        },
         navigationIcon = {
             if(navigationIcon!=null){
                 IconButton(onClick = onNavigationClick) {

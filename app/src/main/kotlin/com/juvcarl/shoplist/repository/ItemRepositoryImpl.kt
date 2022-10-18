@@ -16,6 +16,8 @@ class ItemRepositoryImpl @Inject constructor(
 
     override fun getItemsByNameStream(searchQuery: String): Flow<List<Item>> = itemsDao.searchItemByName(searchQuery).map { it.map(ItemEntity::asModel) }
 
+    override fun getItemByIdStream(id: Long) = itemsDao.searchItemById(id).map { it.asModel() }
+
     override fun getItemsToBuyStream(): Flow<List<Item>> = itemsDao.getItemsToBuy().map { it.map(ItemEntity::asModel)}
 
     override fun getExistingItems(): Flow<List<Item>> = itemsDao.getExistingItems().map { it.map(ItemEntity::asModel)}
