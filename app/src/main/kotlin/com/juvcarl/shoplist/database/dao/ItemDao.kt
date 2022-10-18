@@ -41,4 +41,9 @@ interface ItemDao {
     )
     suspend fun deleteItem(id: Long)
 
+    @Query(
+        value = """SELECT * FROM items WHERE id = :id"""
+    )
+    fun searchItemById(id: Long): Flow<ItemEntity>
+
 }

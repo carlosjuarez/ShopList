@@ -40,22 +40,21 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun AllItemsRoute(
+    navigateToDetail: (Long) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: AllItemsViewModel = hiltViewModel()
 ){
     val itemsState: AllItemsUIState by viewModel.itemUIState.collectAsStateWithLifecycle()
 
-    AllItemsScreen(allItemsState = itemsState, addItem = viewModel::addNewItem, deleteItem = viewModel::deleteItem, toggleBuyStatus = viewModel::toggleItem, searchProduct = viewModel::searchProduct)
+    AllItemsScreen(allItemsState = itemsState, addItem = viewModel::addNewItem, navigateToDetail = navigateToDetail, toggleBuyStatus = viewModel::toggleItem, searchProduct = viewModel::searchProduct)
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AllItemsScreen(
     allItemsState: AllItemsUIState,
     addItem: (Item) -> Unit,
-    deleteItem: (Item) -> Unit,
+    navigateToDetail: (Long) -> Unit,
     toggleBuyStatus: (Item) -> Unit,
     searchProduct: (String) -> Unit
 ){
@@ -100,7 +99,7 @@ fun AllItemsScreen(
                 when(allItemsState){
                     AllItemsUIState.Error -> ErrorScreen()
                     AllItemsUIState.Loading -> LoadingScreen()
-                    is AllItemsUIState.Success -> AllItemsList(allItemsState.items, deleteItem, toggleBuyStatus, showSearchBar, searchProduct)
+                    is AllItemsUIState.Success -> AllItemsList(allItemsState.items, navigateToDetail, toggleBuyStatus, showSearchBar, searchProduct)
                     AllItemsUIState.EmptyList -> AddNewItem(addItem)
                     else -> {}
                 }
@@ -155,7 +154,7 @@ fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (Item) -> Unit, onDismis
 @Composable
 fun AllItemsList(
     itemsList: List<Item>,
-    deleteItem: (Item) -> Unit,
+    navigateToDetail: (Long) -> Unit,
     toggleBuyStatus: (Item) -> Unit,
     showSearchBar: Boolean = false,
     searchProduct: (String) -> Unit
@@ -187,7 +186,7 @@ fun AllItemsList(
             }
         }else{
             items(itemsList){ product ->
-                ItemCard(item = product, deleteItem, toggleBuyStatus)
+                ItemCard(item = product, navigateToDetail = navigateToDetail, toggleBuyStatus)
                 Divider()
             }
         }
@@ -207,15 +206,13 @@ fun AllItemsList(
 }
 
 @Composable
-fun ItemCard(item: Item, deleteItem: (Item) -> Unit, toggleBuyStatus: (Item) -> Unit){
+fun ItemCard(item: Item, navigateToDetail: (Long) -> Unit, toggleBuyStatus: (Item) -> Unit){
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onLongPress = { deleteItem(item) }
-                )
+            .clickable {
+                navigateToDetail(item.id)
             },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -291,7 +288,7 @@ fun AddNewItemForm(addItem: (Item) -> Unit, modifier: Modifier = Modifier) {
     Button(
         onClick = {
             val newItem = Item(
-                name = name,
+                name = name.trim(),
                 date = Clock.System.now(),
                 buyAgain = buyNow,
                 type = type
@@ -313,7 +310,7 @@ fun AllItemsExistingItemsScreenPreview(){
     AllItemsScreen(
         allItemsState = success,
         addItem = {},
-        deleteItem = {},
+        navigateToDetail = {},
         toggleBuyStatus = {}
     ) {}
 }
@@ -331,7 +328,7 @@ fun AllItemsEmptyItemsScreenPreview(){
     AllItemsScreen(
         allItemsState = success,
         addItem = {},
-        deleteItem = {},
+        navigateToDetail = {},
         toggleBuyStatus = {}
     ) {}
 }

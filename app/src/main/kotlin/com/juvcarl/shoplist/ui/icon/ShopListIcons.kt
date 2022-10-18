@@ -3,6 +3,8 @@ package com.juvcarl.shoplist.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,6 +52,7 @@ fun ShopListIconWithLabel(icon: Icon, label : @Composable () -> Unit, modifier: 
 
 
 object ShopListIcons {
+    val Remove = Icon.DrawableResourceIcon(R.drawable.ic_outline_delete, R.string.remove_item)
     val SearchUnselected = Icon.DrawableResourceIcon(R.drawable.ic_outline_search_unselected, R.string.search)
     val SearchSelected = Icon.DrawableResourceIcon(R.drawable.ic_outline_search_selected, R.string.search)
     val Add = Icon.DrawableResourceIcon(R.drawable.ic_outline_add, R.string.add_new_item)
@@ -60,6 +63,7 @@ object ShopListIcons {
     val DontBuy = Icon.DrawableResourceIcon(R.drawable.ic_outline_wait_to_buy, R.string.dont_buy)
     val BuyNow = Icon.DrawableResourceIcon(R.drawable.ic_outline_buy_now, R.string.buy_now)
     val Bought = Icon.DrawableResourceIcon(R.drawable.ic_outline_done, R.string.bought)
+    val Back = ImageVectorIcon(Icons.Default.ArrowBack,R.string.back)
 }
 
 sealed class Icon {

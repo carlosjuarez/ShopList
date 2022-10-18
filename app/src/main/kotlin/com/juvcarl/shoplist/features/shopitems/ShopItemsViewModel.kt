@@ -19,7 +19,7 @@ class ShopItemsViewModel @Inject constructor(
 
     val searchQuery = MutableStateFlow("")
 
-    val itemUIState : StateFlow<ShopItemsUIState> = searchQuery
+    val itemsUIState : StateFlow<ShopItemsUIState> = searchQuery
         .debounce(200)
         .distinctUntilChanged().combine(
                 itemsRepository.getItemsToBuyStream()
@@ -34,6 +34,8 @@ class ShopItemsViewModel @Inject constructor(
         }.stateIn(scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = ShopItemsUIState.Loading)
+
+    val expandedItemList : MutableStateFlow<List<Long>> = MutableStateFlow(listOf())
 
     fun searchItem(name: String){
         searchQuery.value = name
@@ -55,6 +57,18 @@ class ShopItemsViewModel @Inject constructor(
         val updatedItem = item.copy(buyQty = qty)
         viewModelScope.launch {
             itemsRepository.updateitem(updatedItem)
+        }
+    }
+
+    fun toggleExpandedListItem(id: Long){
+        expandedItemList.update {
+            it.toMutableList().also {
+                if(it.contains(id)){
+                    it.remove(id)
+                }else{
+                    it.add(id)
+                }
+            }
         }
     }
 
