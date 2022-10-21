@@ -67,12 +67,18 @@ android {
         }
     }
     namespace = "com.juvcarl.shoplist"
+
+    sourceSets {
+        // Adds exported schema location as test app assets.
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    }
 }
 
 dependencies {
 
     androidTestImplementation(libs.androidx.navigation.testing)
     debugImplementation(libs.androidx.compose.ui.testManifest)
+    androidTestImplementation(libs.room.testing)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
