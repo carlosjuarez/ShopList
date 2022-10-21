@@ -19,8 +19,7 @@ class ShopListDatabaseMigrationTest {
     @get:Rule
     val helper: MigrationTestHelper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),
-        ShopListDatabase::class.java,
-        mutableListOf<AutoMigrationSpec>(ShopListDatabase.RemoveIDMigration()),
+        ShopListDatabase::class.java, listOf(),
         FrameworkSQLiteOpenHelperFactory()
     )
 
@@ -88,31 +87,5 @@ class ShopListDatabaseMigrationTest {
         db.close()
 
     }
-
-    @Test
-    @Throws(IOException::class)
-    fun migrate3To4(){
-        var db = helper.createDatabase(TEST_DB,3).apply {
-            execSQL(
-                "INSERT INTO items (id, name, date, buyAgain, type, buyQty, buyStatus) values (1,'test',12312,1,'testtype',1.5,'BOUGHT')"
-            )
-            close()
-        }
-
-        db = helper.runMigrationsAndValidate(TEST_DB,4,true)
-
-        val cursor = db.query("SELECT * FROM items")
-
-        cursor.use {
-            assertEquals(it.columnCount,6)
-            assertEquals(it.count, 1)
-            it.moveToFirst()
-            assertEquals("test",it.getString(0))
-        }
-
-        db.close()
-
-    }
-
 
 }
