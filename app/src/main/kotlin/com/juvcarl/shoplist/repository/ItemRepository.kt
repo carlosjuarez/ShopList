@@ -13,4 +13,5 @@ interface ItemRepository {
     suspend fun updateitem(item: Item)
     fun getItemsByNameStream(searchQuery: String): Flow<List<Item>>
     fun getItemByIdStream(id: Long): Flow<Item>
+    suspend fun finishShopping(keepItems: Boolean)
 }

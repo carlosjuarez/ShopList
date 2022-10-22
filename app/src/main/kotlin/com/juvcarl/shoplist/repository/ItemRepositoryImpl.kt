@@ -34,4 +34,12 @@ class ItemRepositoryImpl @Inject constructor(
         itemsDao.deleteItem(id)
     }
 
+    override suspend fun finishShopping(keepItems: Boolean){
+        if(keepItems){
+            itemsDao.resetBoughtItemsList()
+        }else{
+            itemsDao.resetList()
+        }
+    }
+
 }

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.room.*
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.juvcarl.shoplist.data.model.BUYSTATUS
 import com.juvcarl.shoplist.data.model.Item
 import com.juvcarl.shoplist.data.model.asEntity
 import com.juvcarl.shoplist.database.dao.ItemDao
@@ -126,6 +127,46 @@ class ShopListDatabaseTest{
         itemDao.deleteItem(1)
         val listItems = itemDao.getItems().first()
         assertTrue(listItems.isEmpty())
+    }
+
+    @Test
+    fun resetBoughtListItems() = runTest {
+        val items = listOf(
+            Item(name = "zuccini", date = Clock.System.now(), buyAgain = true, type = "test", buyQty = 10.5, buyStatus = BUYSTATUS.BUY.name),
+            Item(name = "spinach", date = Clock.System.now(), buyAgain = true, type = "test", buyQty = 1.2, buyStatus = BUYSTATUS.BOUGHT.name),
+            Item(name = "beets", date = Clock.System.now(), buyAgain = true, type = "test", buyQty = 1.0, buyStatus = BUYSTATUS.WAIT_TO_BUY.name),
+        )
+        for(i in items){
+            itemDao.insertItem(i.asEntity())
+        }
+        itemDao.resetBoughtItemsList()
+
+        val dbResult = itemDao.getItems().first()
+
+        assertEquals(3,dbResult.size)
+        assertEquals(1, dbResult.filter { it.buyAgain == false }.size)
+        assertEquals(2, dbResult.filter { it.buyAgain != false }.size)
+
+    }
+
+    @Test
+    fun resetAllListItems() = runTest {
+        val items = listOf(
+            Item(name = "zuccini", date = Clock.System.now(), buyAgain = true, type = "test", buyQty = 10.5, buyStatus = BUYSTATUS.BUY.name),
+            Item(name = "spinach", date = Clock.System.now(), buyAgain = true, type = "test", buyQty = 1.2, buyStatus = BUYSTATUS.BOUGHT.name),
+            Item(name = "beets", date = Clock.System.now(), buyAgain = true, type = "test", buyQty = 1.0, buyStatus = BUYSTATUS.WAIT_TO_BUY.name),
+        )
+        for(i in items){
+            itemDao.insertItem(i.asEntity())
+        }
+        itemDao.resetList()
+
+        val dbResult = itemDao.getItems().first()
+
+        assertEquals(3,dbResult.size)
+        assertEquals(3, dbResult.filter { it.buyAgain == false }.size)
+        assertEquals(0, dbResult.filter { it.buyAgain != false }.size)
+
     }
 
 }
