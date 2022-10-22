@@ -43,7 +43,12 @@ fun ShopItemsRoute(
     val itemsState: ShopItemsUIState by viewModel.itemsUIState.collectAsStateWithLifecycle()
     val expandedItemsList: List<Long> by viewModel.expandedItemList.collectAsStateWithLifecycle()
 
-    ShopItemsScreen(shopItemsState = itemsState, expandedItemsList, viewModel::searchItem, viewModel::changeBuyStatus, viewModel::updateBuyQty, viewModel::toggleExpandedListItem)
+    ShopItemsScreen(shopItemsState = itemsState, expandedItemsList,
+        viewModel::searchItem,
+        viewModel::changeBuyStatus,
+        viewModel::updateBuyQty,
+        viewModel::toggleExpandedListItem,
+        viewModel::finishShopping)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -54,7 +59,8 @@ fun ShopItemsScreen(
     searchProduct: (String) -> Unit = {},
     changeBuyStatus: (Item) -> Unit = {},
     updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> },
-    toggleExpansion: (Long) -> Unit
+    toggleExpansion: (Long) -> Unit,
+    finishShopping: () -> Unit = {}
 ){
     var showSearchBar by remember { mutableStateOf(false) }
 
@@ -68,6 +74,8 @@ fun ShopItemsScreen(
                         showSearchBar = !showSearchBar
                         if(!showSearchBar) searchProduct("")
                     },
+                    actionIcon = ShopListIcons.FinishShopping,
+                    onActionClick = { finishShopping() },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = Color.Transparent
                     ),
