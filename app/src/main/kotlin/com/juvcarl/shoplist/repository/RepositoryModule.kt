@@ -12,4 +12,7 @@ interface RepositoryModule {
     @Binds
     fun bindsItemRepository(itemRepositoryImpl: ItemRepositoryImpl): ItemRepository
 
+    @Binds
+    fun bindsSharedPreferenceRepository(sharedPreferencesRepository: SharedPreferencesRepositoryImpl): SharedPrefenceRepository
+
 }

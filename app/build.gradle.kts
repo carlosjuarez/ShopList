@@ -105,6 +105,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.datetime)
 
+
+    implementation(libs.play.services.nearby)
+
     api(libs.junit4)
     api(libs.androidx.test.core)
     api(libs.kotlinx.coroutines.test)
