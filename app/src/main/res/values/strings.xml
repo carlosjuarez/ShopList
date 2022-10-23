@@ -37,4 +37,6 @@
     <string name="update_item">Update</string>
     <string name="remove_item">Remove Item</string>
     <string name="finish_shopping">Finish Shopping</string>
+    <string name="settings">Settings</string>
+    <string name="shared_preferences_global">ShopListSharedPreferences</string>
 </resources>

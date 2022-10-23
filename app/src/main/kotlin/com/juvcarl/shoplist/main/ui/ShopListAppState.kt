@@ -13,6 +13,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.juvcarl.shoplist.R
 import com.juvcarl.shoplist.features.allItems.navigation.AllItemsDestination
+import com.juvcarl.shoplist.features.settings.navigation.SettingsDestination
 import com.juvcarl.shoplist.features.shopitems.navigation.ShopItemsDestination
 import com.juvcarl.shoplist.main.navigation.TopLevelDestination
 import com.juvcarl.shoplist.navigation.ShopListNavigationDestination
@@ -49,6 +50,13 @@ class ShopListAppState(
             selectedIcon = ShopListIcons.ShopListSelected,
             unselectedIcon = ShopListIcons.ShopListUnselected,
             iconTextId = R.string.shop_list
+        ),
+        TopLevelDestination(
+            route = SettingsDestination.route,
+            destination = SettingsDestination.destination,
+            selectedIcon = ShopListIcons.SettingsSelected,
+            unselectedIcon = ShopListIcons.SettingsUnselected,
+            iconTextId = R.string.settings
         )
     )
 

@@ -8,6 +8,7 @@ import com.juvcarl.shoplist.features.allItems.navigation.AllItemsDestination
 import com.juvcarl.shoplist.features.allItems.navigation.allItemsGraph
 import com.juvcarl.shoplist.features.itemDetail.navigation.ItemDetailDestination
 import com.juvcarl.shoplist.features.itemDetail.navigation.itemDetailGraph
+import com.juvcarl.shoplist.features.settings.navigation.settingsGraph
 import com.juvcarl.shoplist.features.shopitems.navigation.shopItemsGraph
 import com.juvcarl.shoplist.navigation.ShopListNavigationDestination
 
@@ -33,5 +34,6 @@ fun ShopListNavHost(
             }
         )
         shopItemsGraph()
+        settingsGraph()
     }
 }

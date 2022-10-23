@@ -47,6 +47,7 @@ protobufPlugin = "0.8.19"
 retrofit = "2.9.0"
 retrofitKotlinxSerializationJson = "0.8.0"
 room = "2.4.3"
+room-testing = "2.4.3"
 secrets = "2.0.1"
 spotless = "6.7.2"
 turbine = "0.8.0"
@@ -55,6 +56,7 @@ firebase-crashlytics = "18.3.0"
 firebase-crashlytics-gradle = "2.9.2"
 firebase-analytics = "21.2.0"
 gms-googleServices = "4.3.14"
+play-services-nearby = "18.3.0"
 
 [libraries]
 accompanist-flowlayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
@@ -123,11 +125,13 @@ retrofit-kotlin-serialization = { group = "com.jakewharton.retrofit", name = "re
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room-testing"}
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = 'firebase-analytics' }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = 'firebase-crashlytics' }
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
 gms-googleServices = { module = "com.google.gms:google-services", version.ref = "gms-googleServices" }
+play-services-nearby = { group = "com.google.android.gms", name = "play-services-nearby", version.ref = "play-services-nearby"}
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

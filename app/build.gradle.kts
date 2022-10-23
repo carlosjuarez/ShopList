@@ -67,12 +67,18 @@ android {
         }
     }
     namespace = "com.juvcarl.shoplist"
+
+    sourceSets {
+        // Adds exported schema location as test app assets.
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    }
 }
 
 dependencies {
 
     androidTestImplementation(libs.androidx.navigation.testing)
     debugImplementation(libs.androidx.compose.ui.testManifest)
+    androidTestImplementation(libs.room.testing)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
@@ -98,6 +104,9 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.datetime)
+
+
+    implementation(libs.play.services.nearby)
 
     api(libs.junit4)
     api(libs.androidx.test.core)
