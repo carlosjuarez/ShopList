@@ -72,6 +72,12 @@ class ShopItemsViewModel @Inject constructor(
         }
     }
 
+    fun finishShopping(){
+        viewModelScope.launch {
+            itemsRepository.finishShopping(true)
+        }
+    }
+
 }
 
 sealed interface ShopItemsUIState{

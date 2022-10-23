@@ -64,6 +64,7 @@ object ShopListIcons {
     val BuyNow = Icon.DrawableResourceIcon(R.drawable.ic_outline_buy_now, R.string.buy_now)
     val Bought = Icon.DrawableResourceIcon(R.drawable.ic_outline_done, R.string.bought)
     val Back = ImageVectorIcon(Icons.Default.ArrowBack,R.string.back)
+    val FinishShopping = Icon.DrawableResourceIcon(R.drawable.ic_outline_done_all, R.string.finish_shopping)
     val SettingsUnselected = Icon.DrawableResourceIcon(R.drawable.ic_outline_settings_unselected, R.string.settings)
     val SettingsSelected = Icon.DrawableResourceIcon(R.drawable.ic_outline_settings_selected, R.string.settings)
 }
