@@ -2,12 +2,9 @@ package com.juvcarl.shoplist.features.allItems
 
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -53,7 +49,7 @@ fun AllItemsRoute(
 @Composable
 fun AllItemsScreen(
     allItemsState: AllItemsUIState,
-    addItem: (Item) -> Unit,
+    addItem: (String,Boolean,String) -> Unit,
     navigateToDetail: (Long) -> Unit,
     toggleBuyStatus: (Item) -> Unit,
     searchProduct: (String) -> Unit
@@ -109,7 +105,7 @@ fun AllItemsScreen(
 }
 
 @Composable
-fun AddNewItem(addItem: (Item) -> Unit){
+fun AddNewItem(addItem: (String,Boolean,String) -> Unit){
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(16.dp)
@@ -119,7 +115,7 @@ fun AddNewItem(addItem: (Item) -> Unit){
             stringResource(id = R.string.add_new_item),
             modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
         )
-        AddNewItemForm(
+        AddItemForm(
             addItem,
             modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
         )
@@ -127,7 +123,7 @@ fun AddNewItem(addItem: (Item) -> Unit){
 }
 
 @Composable
-fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (Item) -> Unit, onDismissDialog : () -> Unit){
+fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (String,Boolean,String) -> Unit, onDismissDialog : () -> Unit){
     if(showDialog){
         AlertDialog(
             onDismissRequest = onDismissDialog,
@@ -138,9 +134,9 @@ fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (Item) -> Unit, onDismis
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)) {
-                    AddNewItemForm(addItem = { item ->
-                        addItem.invoke(item)
-                        onDismissDialog.invoke()
+                    AddItemForm(addFunction = { input: String, buyAgain: Boolean, type: String ->
+                        addItem(input,buyAgain,type)
+                        onDismissDialog()
                     }, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
 
@@ -243,63 +239,6 @@ fun ItemCard(item: Item, navigateToDetail: (Long) -> Unit, toggleBuyStatus: (Ite
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddNewItemForm(addItem: (Item) -> Unit, modifier: Modifier = Modifier) {
-    var name by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false ) }
-    var type by remember { mutableStateOf("") }
-    var buyNow by remember { mutableStateOf( false ) }
-
-    Spacer(modifier = Modifier.padding(4.dp))
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = name,
-        onValueChange = { name = it },
-        label = { Text(text = stringResource(id = R.string.name)) })
-    Spacer(modifier = Modifier.padding(4.dp))
-    Box(modifier = Modifier.fillMaxWidth()){
-        Text(if(type.isEmpty()) stringResource(id = R.string.product_type) else type, modifier = Modifier
-            .fillMaxWidth()
-            .align(alignment = Alignment.CenterStart)
-            .clickable { expanded = true })
-        IconButton(onClick = { expanded = true }, modifier = Modifier.align(alignment = Alignment.BottomEnd)) {
-            Icon(Icons.Default.ArrowDropDown, contentDescription = stringResource(id = R.string.cd_select_type))
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(text = { Text("Basic") },
-                onClick = { type = "basic"; expanded = false })
-            DropdownMenuItem(text = { Text("Special") },
-                onClick = { type = "Special"; expanded = false })
-            DropdownMenuItem(text = { Text("Unique") },
-                onClick = { type = "Unique"; expanded = false })
-        }
-    }
-    Spacer(modifier = Modifier.padding(4.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ){
-        Checkbox(checked = buyNow, onCheckedChange = { buyNow = !buyNow })
-        Text(stringResource(id = R.string.buy_now_question))
-    }
-    Spacer(modifier = Modifier.padding(4.dp))
-    Button(
-        onClick = {
-            val newItem = Item(
-                name = name.trim(),
-                date = Clock.System.now(),
-                buyAgain = buyNow,
-                type = type
-            )
-            addItem(newItem) },
-        modifier = modifier, shape = RoundedCornerShape(20)
-    ) {
-        Text(stringResource(id = R.string.add))
-    }
-}
-
 @Preview
 @Composable
 fun AllItemsExistingItemsScreenPreview(){
@@ -309,7 +248,7 @@ fun AllItemsExistingItemsScreenPreview(){
     ))
     AllItemsScreen(
         allItemsState = success,
-        addItem = {},
+        addItem = { s: String, b: Boolean, s1: String -> },
         navigateToDetail = {},
         toggleBuyStatus = {}
     ) {}
@@ -318,7 +257,7 @@ fun AllItemsExistingItemsScreenPreview(){
 @Preview(showBackground = true)
 @Composable
 fun AddNewItemAlertDialogPreview(){
-    AddNewItemAlertDialog(showDialog = true, addItem = {}, onDismissDialog = {})
+    AddNewItemAlertDialog(showDialog = true, addItem = { s: String, b: Boolean, s1: String -> }, onDismissDialog = {})
 }
 
 @Preview
@@ -327,7 +266,7 @@ fun AllItemsEmptyItemsScreenPreview(){
     val success = AllItemsUIState.Success(listOf())
     AllItemsScreen(
         allItemsState = success,
-        addItem = {},
+        addItem = { s: String, b: Boolean, s1: String -> },
         navigateToDetail = {},
         toggleBuyStatus = {}
     ) {}
@@ -336,7 +275,7 @@ fun AllItemsEmptyItemsScreenPreview(){
 @Preview
 @Composable
 fun AddNewItemPreview(){
-    AddNewItemAlertDialog(true,addItem = {}, onDismissDialog = {})
+    AddNewItemAlertDialog(true,addItem = { s: String, b: Boolean, s1: String -> }, onDismissDialog = {})
 }
 
 @Preview(showBackground = true)
@@ -351,5 +290,5 @@ fun AllProductsListPreview(){
 @Preview(showBackground = true)
 @Composable
 fun AddItemDisplayPreview(){
-    AddNewItem(addItem = {})
+    AddNewItem(addItem = { s: String, b: Boolean, s1: String -> })
 }

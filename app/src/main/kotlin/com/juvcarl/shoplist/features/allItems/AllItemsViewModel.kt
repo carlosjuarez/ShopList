@@ -9,6 +9,7 @@ import com.juvcarl.shoplist.repository.ItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import java.util.*
 import javax.inject.Inject
 
@@ -60,9 +61,15 @@ class AllItemsViewModel @Inject constructor(
         }
     }
 
-    fun addNewItem(item: Item){
+    fun addNewItem(name: String, buyAgain: Boolean, type: String){
         viewModelScope.launch {
-            itemsRepository.insertItem(item)
+            val newItem = Item(
+                name = name.trim(),
+                date = Clock.System.now(),
+                buyAgain = buyAgain,
+                type = type
+            )
+            itemsRepository.insertItem(newItem)
         }
     }
 

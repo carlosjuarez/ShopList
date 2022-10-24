@@ -42,4 +42,8 @@ class ItemRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun insertMultipleItems(items: List<Item>): List<Long> {
+        return itemsDao.insertItems(items.map { it.asEntity() })
+    }
+
 }
