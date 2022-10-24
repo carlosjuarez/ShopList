@@ -60,9 +60,17 @@ fun ShopItemsScreen(
     changeBuyStatus: (Item) -> Unit = {},
     updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> },
     toggleExpansion: (Long) -> Unit,
-    finishShopping: () -> Unit = {}
+    finishShopping: (Boolean) -> Unit = {}
 ){
     var showSearchBar by remember { mutableStateOf(false) }
+    var showFinishShoppingDialog by remember { mutableStateOf(false) }
+
+    FinishShoppingDialog(showFinishShoppingDialog,{
+        showFinishShoppingDialog = false
+    },{
+        finishShopping(it)
+        showFinishShoppingDialog = false
+    })
 
     ShopListTheme {
         Scaffold (
@@ -75,7 +83,9 @@ fun ShopItemsScreen(
                         if(!showSearchBar) searchProduct("")
                     },
                     actionIcon = ShopListIcons.FinishShopping,
-                    onActionClick = { finishShopping() },
+                    onActionClick = {
+                        showFinishShoppingDialog = true
+                    },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = Color.Transparent
                     ),
@@ -100,6 +110,39 @@ fun ShopItemsScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun FinishShoppingDialog(
+    showFinishShoppingDialog: Boolean,
+    onDismiss: () -> Unit,
+    removeItems: (Boolean) -> Unit
+) {
+    if(showFinishShoppingDialog){
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            dismissButton = {
+                TextButton(onClick = {
+                    removeItems(true)
+                }) {
+                    Text(text = stringResource(id = R.string.keep_items))
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    removeItems(false)
+                }) {
+                    Text(text = stringResource(id = R.string.remove_all))
+                }
+            },
+            title = {
+                Text(text = stringResource(id = R.string.keep_unbought_items), style = MaterialTheme.typography.titleLarge)
+            },
+            text = {
+                Text(text = stringResource(id = R.string.keep_unbought_items_body), style = MaterialTheme.typography.bodyMedium)
+            }
+        )
     }
 }
 
@@ -382,4 +425,12 @@ fun UpdateQtyFormPreview(){
         type = "test",
         buyStatus = BUYSTATUS.BUY.name)
     UpdateQtyForm(item)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FinishShoppingDialogPreview(){
+    ShopListTheme {
+        FinishShoppingDialog(true,{},{Boolean})
+    }
 }
