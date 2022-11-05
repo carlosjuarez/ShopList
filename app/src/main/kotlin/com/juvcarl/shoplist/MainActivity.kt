@@ -30,12 +30,16 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.ktx.Firebase
 import com.juvcarl.shoplist.data.model.Item
+import com.juvcarl.shoplist.manager.NearbyConnectionManager
 import kotlinx.datetime.Clock
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    @Inject
+    lateinit var nearbyConnectionManager: NearbyConnectionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +50,10 @@ class MainActivity : ComponentActivity() {
             ShopListApp(windowSizeClass = calculateWindowSizeClass(activity = this))
         }
     }
+
+
+
+
 
 }
 

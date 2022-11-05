@@ -7,7 +7,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class SharedPrefencesRepository @Inject constructor(
-    @ApplicationContext val context: Context
+    @ApplicationContext private val context: Context
 ) {
     private val sharedPreferences = context.getSharedPreferences(context.getString(R.string.shared_preferences_global), Context.MODE_PRIVATE)
 
@@ -22,7 +22,19 @@ class SharedPrefencesRepository @Inject constructor(
         }
     }
 
+    fun getStringValue(key: String, default: String?): String?{
+        return sharedPreferences.getString(key,default)
+    }
+
+    fun setStringValue(key: String, value: String){
+        with (sharedPreferences.edit()) {
+            putString(key, value)
+            apply()
+        }
+    }
+
 }
 object Preference{
     const val CONNECT_NEARBY = "connect_nearby"
+    const val LOCAL_USERNAME = "local_username"
 }

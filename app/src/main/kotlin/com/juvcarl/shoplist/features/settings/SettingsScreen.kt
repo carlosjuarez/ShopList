@@ -16,6 +16,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.juvcarl.shoplist.R
 import com.juvcarl.shoplist.ui.component.AddItemForm
+import com.juvcarl.shoplist.ui.component.RequestNearbyPermissions
 import com.juvcarl.shoplist.ui.component.ShopListTopAppBar
 import com.juvcarl.shoplist.ui.theme.ShopListTheme
 
@@ -40,7 +41,7 @@ fun SettingsRoute(
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    connectNearby: Boolean = false,
+    connectNearby: Pair<Boolean,String>,
     bulkInsertStatus: BulkInsertStatus = BulkInsertStatus.Empty,
     addMultipleItemsFunction: (String, Boolean, String) -> Unit = { _: String, _: Boolean, _: String -> },
     connectNearbyUsers: (Boolean) -> Unit = { _: Boolean ->}
@@ -78,6 +79,7 @@ fun SettingsScreen(
             ) {
                 SettingsDisplay(
                     connectNearby,
+                    connectNearbyUsers,
                     bulkInsertStatus
                 ){
                     openBulkInsertDialog = true
@@ -119,21 +121,27 @@ fun BulkInsertDialog(showDialog: Boolean = false, addMultipleItemsFunction: (Str
 
 @Composable
 fun SettingsDisplay(
-    connectNearby: Boolean = false,
+    connectNearby: Pair<Boolean, String>,
+    connectNearbyUsers: (Boolean) -> Unit,
     bulkInsertStatus: BulkInsertStatus = BulkInsertStatus.Empty,
-    connectNearbyUsers: (Boolean) -> Unit = { _: Boolean -> },
     openBulkDialog: () -> Unit
 ){
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             ToggleSetting(connectNearby,connectNearbyUsers)
+            Divider(color = MaterialTheme.colorScheme.outline)
         }
-        Row {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             BulkInsertSection(bulkInsertStatus){
                 openBulkDialog()
             }
@@ -178,11 +186,30 @@ fun BulkInsertSection(
 }
 
 @Composable
-fun ToggleSetting(connectNearby: Boolean, connectNearbyUsers: (Boolean) -> Unit) {
-
+fun ToggleSetting(connectNearby: Pair<Boolean, String>, connectNearbyUsers: (Boolean) -> Unit) {
+    Column {
+        Row{
+            Text(
+                stringResource(id = R.string.connect_with_nearby_users),
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(id = R.string.connect_with_nearby_users))
+            Switch(checked = connectNearby.first, onCheckedChange = connectNearbyUsers)
+        }
+        if(connectNearby.first){
+            RequestNearbyPermissions {
+                Row {
+                    Text(stringResource(id = R.string.local_username_label))
+                    Text(connectNearby.second)
+                }
+            }
+        }
+    }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable
@@ -218,6 +245,16 @@ fun BulkInsertSectionLoadingPreview(){
     ShopListTheme {
         Column {
             BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Loading)
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ToggleSettingPreview(){
+    ShopListTheme {
+        Column {
+            ToggleSetting(Pair(true,"test"),{})
         }
     }
 }

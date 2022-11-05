@@ -248,7 +248,7 @@ fun AllItemsExistingItemsScreenPreview(){
     ))
     AllItemsScreen(
         allItemsState = success,
-        addItem = { s: String, b: Boolean, s1: String -> },
+        addItem = { _: String, _: Boolean, _: String -> },
         navigateToDetail = {},
         toggleBuyStatus = {}
     ) {}
@@ -257,7 +257,7 @@ fun AllItemsExistingItemsScreenPreview(){
 @Preview(showBackground = true)
 @Composable
 fun AddNewItemAlertDialogPreview(){
-    AddNewItemAlertDialog(showDialog = true, addItem = { s: String, b: Boolean, s1: String -> }, onDismissDialog = {})
+    AddNewItemAlertDialog(showDialog = true, addItem = { _: String, _: Boolean, _: String -> }, onDismissDialog = {})
 }
 
 @Preview
@@ -266,7 +266,7 @@ fun AllItemsEmptyItemsScreenPreview(){
     val success = AllItemsUIState.Success(listOf())
     AllItemsScreen(
         allItemsState = success,
-        addItem = { s: String, b: Boolean, s1: String -> },
+        addItem = { _: String, _: Boolean, _: String -> },
         navigateToDetail = {},
         toggleBuyStatus = {}
     ) {}
@@ -275,7 +275,7 @@ fun AllItemsEmptyItemsScreenPreview(){
 @Preview
 @Composable
 fun AddNewItemPreview(){
-    AddNewItemAlertDialog(true,addItem = { s: String, b: Boolean, s1: String -> }, onDismissDialog = {})
+    AddNewItemAlertDialog(true,addItem = { _: String, _: Boolean, _: String -> }, onDismissDialog = {})
 }
 
 @Preview(showBackground = true)
@@ -290,5 +290,5 @@ fun AllProductsListPreview(){
 @Preview(showBackground = true)
 @Composable
 fun AddItemDisplayPreview(){
-    AddNewItem(addItem = { s: String, b: Boolean, s1: String -> })
+    AddNewItem(addItem = { _: String, _: Boolean, _: String -> })
 }

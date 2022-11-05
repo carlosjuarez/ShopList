@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.juvcarl.shoplist.data.model.BUYSTATUS
 import com.juvcarl.shoplist.data.model.Item
 import com.juvcarl.shoplist.extensions.separateItems
+import com.juvcarl.shoplist.manager.NearbySynchronizationManager
 import com.juvcarl.shoplist.repository.ItemRepository
 import com.juvcarl.shoplist.repository.Preference
 import com.juvcarl.shoplist.repository.SharedPrefencesRepository
+import com.juvcarl.shoplist.util.IdentityUtils
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,34 +23,28 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    val itemRepository: ItemRepository,
-    val sharedPrefencesRepository: SharedPrefencesRepository
+    private val itemRepository: ItemRepository,
+    private val sharedPrefencesRepository: SharedPrefencesRepository,
+    private val identityUtils: IdentityUtils,
+    private val NearbySyncrhonizationManager: NearbySynchronizationManager
 ) : ViewModel() {
 
-    val connectWithNearbyUsers: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val connectWithNearbyUsers: MutableStateFlow<Pair<Boolean,String>> = MutableStateFlow(Pair(false,""))
     val bulkInsertStatus: MutableStateFlow<BulkInsertStatus> = MutableStateFlow(BulkInsertStatus.Empty)
-
-    init {
-        checkConnectNearbyStatus()
-    }
-
-    private fun checkConnectNearbyStatus(){
-        viewModelScope.launch {
-            connectWithNearbyUsers.update {
-                sharedPrefencesRepository.getBooleanValue(Preference.CONNECT_NEARBY,false)
-            }
-        }
-    }
 
     fun toggleConnectNearby(connectNearby: Boolean){
         viewModelScope.launch {
-            sharedPrefencesRepository.setBooleanValue(Preference.CONNECT_NEARBY,connectNearby)
-            checkConnectNearbyStatus()
-        }
-        if(connectNearby){
-            //TODO start nearby API connection
-        }else{
-            //TODO Stop connections and don't call them again until activated
+            connectWithNearbyUsers.update {
+                Pair(
+                    connectNearby,
+                    identityUtils.getLocalUserName()
+                )
+            }
+            if(connectNearby){
+                NearbySyncrhonizationManager.startSynchronization()
+            }else{
+                NearbySyncrhonizationManager.stopSynchronization()
+            }
         }
     }
 
@@ -59,7 +55,7 @@ class SettingsViewModel @Inject constructor(
             }
             val itemNames = input.separateItems()
             val itemsToInsert = itemNames.map { name ->
-                Item(name = name, buyAgain = buyAgain, buyQty = 0.0, buyStatus = BUYSTATUS.BUY.name, date = Clock.System.now())
+                Item(name = name, buyAgain = buyAgain, buyQty = 0.0, buyStatus = BUYSTATUS.BUY.name, date = Clock.System.now(), type = type)
             }
             val result = itemRepository.insertMultipleItems(itemsToInsert)
             bulkInsertStatus.update {

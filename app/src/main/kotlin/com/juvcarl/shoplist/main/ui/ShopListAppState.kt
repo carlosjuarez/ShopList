@@ -37,11 +37,7 @@ class ShopListAppState(
     val currentDestination: NavDestination?
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
-    val shouldShowBottomBar: Boolean
-        get() = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact || windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
-
-    /*val shouldShowNavRail: Boolean
-        get() = !shouldShowBottomBar*/
+    val shouldShowBottomBar: Boolean = true
 
     val topLevelDestinations: List<TopLevelDestination> = listOf(
         TopLevelDestination(
