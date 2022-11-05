@@ -49,4 +49,15 @@
     <string name="keep_unbought_items_body">Do you want to clear all the items or just the items you bought?</string>
     <string name="keep_items">Keep Items</string>
     <string name="remove_all">Remove All</string>
+    <string name="connect_with_nearby_users">Share with nearby users</string>
+    <string name="obtaining_devices">Searching Devices</string>
+    <string name="connected">Connected to user</string>
+    <string name="advertising_initiated">Initiating advertising</string>
+    <string name="advertising_failure">Failure advertising</string>
+    <string name="local_username_label">Username:</string>
+    <string name="failed_advertising">Advertising failed</string>
+    <string name="discovering_initiated">Discovering initiated</string>
+    <string name="discovering_failed">Discovering failed</string>
+    <string name="stop_advertising">Advertising stop</string>
+    <string name="discovering_stop">Discovering stop</string>
 </resources>

@@ -58,7 +58,7 @@ fun ShopItemsScreen(
     expandedItemsList: List<Long>,
     searchProduct: (String) -> Unit = {},
     changeBuyStatus: (Item) -> Unit = {},
-    updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> },
+    updateBuyQty: (Item, Double, String?) -> Unit = { _: Item, _: Double, _: String? -> },
     toggleExpansion: (Long) -> Unit,
     finishShopping: (Boolean) -> Unit = {}
 ){
@@ -154,7 +154,7 @@ fun ShopItemsList(
     showSearchBar: Boolean,
     searchProduct: (String) -> Unit,
     changeBuyStatus: (Item) -> Unit = {},
-    updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> },
+    updateBuyQty: (Item, Double, String?) -> Unit,
     toggleExpansion: (Long) -> Unit = {}
 ) {
 
@@ -212,10 +212,10 @@ fun ShopItemsList(
 @Composable
 fun ItemCard(
     item: Item,
-    ChangeBuyStatus: (Item) -> Unit = {},
-    updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> },
+    ChangeBuyStatus: (Item) -> Unit,
+    updateBuyQty: (Item, Double, String?) -> Unit,
     showQtyForm: Boolean,
-    toggleFormVisibility: () -> Unit = {}
+    toggleFormVisibility: () -> Unit
 ){
     Column {
         Row(
@@ -277,7 +277,11 @@ fun ItemCard(
 
 
 @Composable
-fun UpdateQtyForm(item: Item, modifier: Modifier = Modifier, updateBuyQty: (Item, Double, String?) -> Unit = { item: Item, d: Double, s: String? -> }, toggleFormVisibility: () -> Unit = {}) {
+fun UpdateQtyForm(
+    item: Item,
+    modifier: Modifier = Modifier,
+    updateBuyQty: (Item, Double, String?) -> Unit,
+    toggleFormVisibility: () -> Unit) {
 
     var qty by remember { mutableStateOf("") }
     var measure by remember { mutableStateOf("" ) }
@@ -333,7 +337,12 @@ fun ItemCardPreviw(){
         buyQty = 0.0,
         type = "test",
         buyStatus = BUYSTATUS.BUY.name)
-    ItemCard(item = item, showQtyForm = false)
+    ItemCard(item = item,
+        showQtyForm = false,
+        ChangeBuyStatus = {},
+        updateBuyQty = {_,_,_ ->},
+        toggleFormVisibility = {}
+    )
 }
 
 @Preview(showBackground = true)
@@ -408,7 +417,7 @@ fun ShopItemsListWithSearchBarPreview(){
         expandedItemsList = listOf(),
         showSearchBar = true,
         searchProduct = {},
-        updateBuyQty = { item: Item, d: Double, s: String? -> },
+        updateBuyQty = { _: Item, _: Double, _: String? -> },
         toggleExpansion = {}
     )
 
@@ -424,7 +433,10 @@ fun UpdateQtyFormPreview(){
         buyQty = 0.0,
         type = "test",
         buyStatus = BUYSTATUS.BUY.name)
-    UpdateQtyForm(item)
+    UpdateQtyForm(item,
+        updateBuyQty = {_,_,_ ->},
+        toggleFormVisibility = {}
+    )
 }
 
 @Preview(showBackground = true)

@@ -54,7 +54,7 @@ fun ShopListApp(
                     navController = appState.navController,
                     onNavigateToDestination = appState::navigate,
                     onBackClick = appState::onBackClick,
-                modifier = Modifier.padding(paddingValues)
+                    modifier = Modifier.padding(paddingValues)
                     .consumedWindowInsets(paddingValues))
             }
         }
