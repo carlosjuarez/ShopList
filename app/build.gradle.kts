@@ -13,8 +13,8 @@ plugins {
 android {
     defaultConfig {
         applicationId = "com.juvcarl.shoplist"
-        versionCode = 3
-        versionName = "0.0.3" // X.Y.Z; X = Major, Y = minor, Z = Patch level
+        versionCode = 4
+        versionName = "0.0.4" // X.Y.Z; X = Major, Y = minor, Z = Patch level
 
         // Custom test runner to set up Hilt dependency graph
         testInstrumentationRunner = "com.juvcarl.shoplist.testing.ShopListTestRunner"
@@ -127,6 +127,8 @@ dependencies {
     implementation(libs.firebase.bom)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+
+    testImplementation(libs.android.mockk)
 
     // androidx.test is forcing JUnit, 4.12. This forces it to use 4.13
     configurations.configureEach {

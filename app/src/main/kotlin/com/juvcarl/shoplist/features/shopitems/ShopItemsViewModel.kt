@@ -19,6 +19,8 @@ class ShopItemsViewModel @Inject constructor(
 
     val searchQuery = MutableStateFlow("")
 
+    val shareListString = MutableStateFlow("")
+
     val itemsUIState : StateFlow<ShopItemsUIState> = searchQuery
         .debounce(200)
         .distinctUntilChanged().combine(
@@ -75,6 +77,18 @@ class ShopItemsViewModel @Inject constructor(
     fun finishShopping(keepItems: Boolean){
         viewModelScope.launch {
             itemsRepository.finishShopping(keepItems)
+        }
+    }
+
+    fun shareList(){
+        viewModelScope.launch {
+            shareListString.update { itemsRepository.createShareString() }
+        }
+    }
+
+    fun listShared(){
+        viewModelScope.launch {
+            shareListString.update { "" }
         }
     }
 

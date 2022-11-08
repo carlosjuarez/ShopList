@@ -2,7 +2,9 @@ package com.juvcarl.shoplist.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.juvcarl.shoplist.data.model.BUYSTATUS
 import com.juvcarl.shoplist.data.model.Item
+import com.juvcarl.shoplist.extensions.StringWithoutZeroDecimal
 import kotlinx.datetime.Instant
 
 @Entity(tableName = "items")
@@ -25,3 +27,26 @@ fun ItemEntity.asModel() = Item(
     buyQty = buyQty,
     buyStatus = buyStatus
 )
+
+fun ItemEntity.asShareString() : String {
+    val stringBuilder = StringBuilder()
+
+    if(this.buyQty != null && this.buyQty > 0){
+        stringBuilder.append(
+            "${this.buyQty.StringWithoutZeroDecimal()} "
+        )
+    }
+    stringBuilder.append("${this.name} ")
+    stringBuilder.append(
+        when(this.buyStatus){
+            BUYSTATUS.BOUGHT.name -> "[*]"
+            BUYSTATUS.WAIT_TO_BUY.name -> "[/]"
+            else -> "[ ]"
+        }
+    )
+    return stringBuilder.toString()
+}
+
+fun ItemEntity.asExportString() : String{
+    return this.name
+}

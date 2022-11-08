@@ -7,6 +7,7 @@ import com.google.android.gms.nearby.connection.PayloadCallback
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate
 import com.juvcarl.shoplist.di.ApplicationScope
 import com.juvcarl.shoplist.di.DefaultDispatcher
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +20,8 @@ import javax.inject.Singleton
 class NearbySynchronizationManager @Inject constructor(
     @ApplicationContext private val context: Context,
     @ApplicationScope private val externalScope: CoroutineScope,
-    @DefaultDispatcher private val dispatcher: CoroutineDispatcher
+    @DefaultDispatcher private val dispatcher: CoroutineDispatcher,
+    nearbyConnectionManagerFactory: NearbyConnectionManagerFactory
 ){
 
     val payloadCallback = object : PayloadCallback(){
@@ -32,12 +34,8 @@ class NearbySynchronizationManager @Inject constructor(
         }
     }
 
-    @Inject
-    lateinit var nearbyConnectionManagerFactory: NearbyConnectionManagerFactory
+
     private var nearbyConnectionManager = nearbyConnectionManagerFactory.create(payloadCallback)
-
-
-
 
 
     fun startSynchronization(){

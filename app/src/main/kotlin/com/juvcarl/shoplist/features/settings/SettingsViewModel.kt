@@ -31,6 +31,7 @@ class SettingsViewModel @Inject constructor(
 
     val connectWithNearbyUsers: MutableStateFlow<Pair<Boolean,String>> = MutableStateFlow(Pair(false,""))
     val bulkInsertStatus: MutableStateFlow<BulkInsertStatus> = MutableStateFlow(BulkInsertStatus.Empty)
+    val exportString: MutableStateFlow<String> = MutableStateFlow("")
 
     fun toggleConnectNearby(connectNearby: Boolean){
         viewModelScope.launch {
@@ -66,6 +67,18 @@ class SettingsViewModel @Inject constructor(
                 }
             }
 
+        }
+    }
+
+    fun exportList(){
+        viewModelScope.launch {
+            exportString.update { itemRepository.createExportString() }
+        }
+    }
+
+    fun listShared(){
+        viewModelScope.launch {
+            exportString.update { "" }
         }
     }
 }
