@@ -67,6 +67,9 @@ object ShopListIcons {
     val FinishShopping = Icon.DrawableResourceIcon(R.drawable.ic_outline_done_all, R.string.finish_shopping)
     val SettingsUnselected = Icon.DrawableResourceIcon(R.drawable.ic_outline_settings_unselected, R.string.settings)
     val SettingsSelected = Icon.DrawableResourceIcon(R.drawable.ic_outline_settings_selected, R.string.settings)
+    val ExportList = Icon.DrawableResourceIcon(R.drawable.ic_outline_export, R.string.export_list)
+    val ShareList = Icon.DrawableResourceIcon(R.drawable.ic_outline_share, R.string.share_list)
+    val Menu = Icon.DrawableResourceIcon(R.drawable.ic_outline_menu, R.string.menu)
 }
 
 sealed class Icon {

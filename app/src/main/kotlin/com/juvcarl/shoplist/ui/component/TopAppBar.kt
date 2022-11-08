@@ -20,7 +20,8 @@ fun ShopListTopAppBar(
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
     onNavigationClick: () -> Unit = {},
     onActionClick: () -> Unit = {},
-    titleString: String? = null
+    titleString: String? = null,
+    actionsContent: @Composable () -> Unit = {}
 ){
     CenterAlignedTopAppBar(
         title = {
@@ -42,6 +43,8 @@ fun ShopListTopAppBar(
                 IconButton(onClick = onActionClick) {
                     ShopListIcon(icon = actionIcon)
                 }
+            }else{
+                actionsContent()
             }
         },
         colors = colors,

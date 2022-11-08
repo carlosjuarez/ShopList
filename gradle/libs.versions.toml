@@ -52,11 +52,12 @@ secrets = "2.0.1"
 spotless = "6.7.2"
 turbine = "0.8.0"
 firebase-bom = "31.0.0"
-firebase-crashlytics = "18.3.0"
+firebase-crashlytics = "18.3.1"
 firebase-crashlytics-gradle = "2.9.2"
 firebase-analytics = "21.2.0"
 gms-googleServices = "4.3.14"
 play-services-nearby = "18.3.0"
+android-mockk = "1.13.2"
 
 [libraries]
 accompanist-flowlayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
@@ -133,6 +134,7 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
 gms-googleServices = { module = "com.google.gms:google-services", version.ref = "gms-googleServices" }
 play-services-nearby = { group = "com.google.android.gms", name = "play-services-nearby", version.ref = "play-services-nearby"}
+android-mockk = { group = "io.mockk", name = "mockk", version.ref = "android-mockk"}
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

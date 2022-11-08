@@ -12,9 +12,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ItemDao {
     @Query(
-        value = """SELECT * FROM items ORDER BY name ASC"""
+        value = """SELECT * FROM items ORDER BY name COLLATE NOCASE ASC"""
     )
     fun getItems(): Flow<List<ItemEntity>>
+
+    @Query(
+        value = """SELECT * FROM items ORDER BY name COLLATE NOCASE ASC"""
+    )
+    fun listItems(): List<ItemEntity>
 
     @Query(
         value = """SELECT * FROM items WHERE name LIKE '%' || :searchQuery || '%'"""
@@ -22,12 +27,17 @@ interface ItemDao {
     fun searchItemByName(searchQuery: String): Flow<List<ItemEntity>>
 
     @Query(
-        value = """SELECT * FROM items where buyAgain = 1 ORDER BY name ASC"""
+        value = """SELECT * FROM items where buyAgain = 1 ORDER BY name COLLATE NOCASE ASC"""
     )
     fun getItemsToBuy(): Flow<List<ItemEntity>>
 
     @Query(
-        value = """SELECT * FROM items where buyAgain = 0 ORDER BY name ASC"""
+        value = """SELECT * FROM items where buyAgain = 1 ORDER BY name COLLATE NOCASE ASC"""
+    )
+    fun listItemsToBuy(): List<ItemEntity>
+
+    @Query(
+        value = """SELECT * FROM items where buyAgain = 0 ORDER BY name COLLATE NOCASE ASC"""
     )
     fun getExistingItems(): Flow<List<ItemEntity>>
 

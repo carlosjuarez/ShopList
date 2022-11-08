@@ -60,4 +60,8 @@
     <string name="discovering_failed">Discovering failed</string>
     <string name="stop_advertising">Advertising stop</string>
     <string name="discovering_stop">Discovering stop</string>
+    <string name="export_list">Export List</string>
+    <string name="share_list">Share List</string>
+    <string name="menu">Menu</string>
+    <string name="export_list_instruction">Share your list of items, the other person can paste the shared text to add multiple items</string>
 </resources>

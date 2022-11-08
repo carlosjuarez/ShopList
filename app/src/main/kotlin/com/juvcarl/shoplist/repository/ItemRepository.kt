@@ -15,4 +15,6 @@ interface ItemRepository {
     fun getItemByIdStream(id: Long): Flow<Item>
     suspend fun finishShopping(keepItems: Boolean)
     suspend fun insertMultipleItems(items: List<Item>): List<Long>
+    suspend fun createShareString(): String
+    suspend fun createExportString(): String
 }

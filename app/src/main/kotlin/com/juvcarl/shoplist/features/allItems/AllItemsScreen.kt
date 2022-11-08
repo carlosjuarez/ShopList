@@ -155,7 +155,7 @@ fun AllItemsList(
     showSearchBar: Boolean = false,
     searchProduct: (String) -> Unit
 ){
-    val focusRequester = FocusRequester()
+    val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
 
     LazyColumn(modifier = Modifier

@@ -1,5 +1,6 @@
 package com.juvcarl.shoplist.features.shopitems
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,11 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,6 +30,7 @@ import com.juvcarl.shoplist.data.model.BUYSTATUS
 import com.juvcarl.shoplist.data.model.Item
 import com.juvcarl.shoplist.extensions.StringWithoutZeroDecimal
 import com.juvcarl.shoplist.ui.Icon
+import com.juvcarl.shoplist.ui.ShopListIcon
 import com.juvcarl.shoplist.ui.ShopListIconWithLabel
 import com.juvcarl.shoplist.ui.ShopListIcons
 import com.juvcarl.shoplist.ui.component.*
@@ -43,12 +47,29 @@ fun ShopItemsRoute(
     val itemsState: ShopItemsUIState by viewModel.itemsUIState.collectAsStateWithLifecycle()
     val expandedItemsList: List<Long> by viewModel.expandedItemList.collectAsStateWithLifecycle()
 
+    val sharedString : String by viewModel.shareListString.collectAsStateWithLifecycle()
+
     ShopItemsScreen(shopItemsState = itemsState, expandedItemsList,
         viewModel::searchItem,
         viewModel::changeBuyStatus,
         viewModel::updateBuyQty,
         viewModel::toggleExpandedListItem,
-        viewModel::finishShopping)
+        viewModel::finishShopping,
+        viewModel::shareList)
+
+
+    if(!sharedString.isEmpty()){
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, sharedString)
+            type = "text/plain"
+        }
+        val context = LocalContext.current
+        val shareIntent = Intent.createChooser(sendIntent, stringResource(id = R.string.share_list))
+        context.startActivity(shareIntent)
+
+        viewModel.listShared()
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -56,14 +77,17 @@ fun ShopItemsRoute(
 fun ShopItemsScreen(
     shopItemsState: ShopItemsUIState,
     expandedItemsList: List<Long>,
-    searchProduct: (String) -> Unit = {},
-    changeBuyStatus: (Item) -> Unit = {},
-    updateBuyQty: (Item, Double, String?) -> Unit = { _: Item, _: Double, _: String? -> },
+    searchProduct: (String) -> Unit,
+    changeBuyStatus: (Item) -> Unit,
+    updateBuyQty: (Item, Double, String?) -> Unit,
     toggleExpansion: (Long) -> Unit,
-    finishShopping: (Boolean) -> Unit = {}
+    finishShopping: (Boolean) -> Unit,
+    shareList: () -> Unit
 ){
     var showSearchBar by remember { mutableStateOf(false) }
     var showFinishShoppingDialog by remember { mutableStateOf(false) }
+
+    var expandedMenu by remember { mutableStateOf(false) }
 
     FinishShoppingDialog(showFinishShoppingDialog,{
         showFinishShoppingDialog = false
@@ -82,9 +106,17 @@ fun ShopItemsScreen(
                         showSearchBar = !showSearchBar
                         if(!showSearchBar) searchProduct("")
                     },
-                    actionIcon = ShopListIcons.FinishShopping,
-                    onActionClick = {
-                        showFinishShoppingDialog = true
+                    actionsContent = {
+                        IconButton(onClick = {
+                            expandedMenu = true
+                        }) {
+                            ShopListIcon(icon = ShopListIcons.Menu)
+                        }
+                        ShopItemsMenu(
+                            expanded = expandedMenu,
+                            onDismiss = { expandedMenu = false },
+                            finishShopping = { showFinishShoppingDialog = true },
+                            shareList = shareList)
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = Color.Transparent
@@ -109,6 +141,25 @@ fun ShopItemsScreen(
                     is ShopItemsUIState.Success -> ShopItemsList(shopItemsState.items, expandedItemsList, showSearchBar, searchProduct, changeBuyStatus, updateBuyQty, toggleExpansion)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ShopItemsMenu(expanded: Boolean, onDismiss: () -> Unit, finishShopping: () -> Unit, shareList: () -> Unit){
+    if(expanded){
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { onDismiss() }
+        ) {
+            DropdownMenuItem(
+                leadingIcon = { ShopListIcon(icon = ShopListIcons.FinishShopping) },
+                text = { Text(text = stringResource( id = R.string.finish_shopping)) },
+                onClick = { finishShopping() })
+            DropdownMenuItem(
+                leadingIcon = { ShopListIcon(icon = ShopListIcons.ShareList) },
+                text = { Text(text = stringResource( id = R.string.share_list)) },
+                onClick = { shareList() })
         }
     }
 }
@@ -324,6 +375,43 @@ fun UpdateQtyForm(
         ) {
             Text(stringResource(id = R.string.update_qty))
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShopItemsScreenPreview(){
+
+    val shopItemsState = ShopItemsUIState.Success(
+        listOf(
+            Item(0L,"test",Clock.System.now(),true,"test",1.0,BUYSTATUS.BUY.name),
+            Item(1L,"test1",Clock.System.now(),true,"test",1.0,BUYSTATUS.BUY.name)
+        )
+    )
+
+    ShopListTheme {
+        ShopItemsScreen(
+            shopItemsState = shopItemsState,
+            expandedItemsList = listOf(),
+            searchProduct = {},
+            changeBuyStatus = {},
+            updateBuyQty = {_,_,_, ->},
+            toggleExpansion = {},
+            finishShopping = {}) {
+
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShopItemDropDownMenuPreview(){
+    ShopListTheme {
+        ShopItemsMenu(
+            expanded = true,
+            onDismiss = { },
+            finishShopping = {  },
+            shareList = {})
     }
 }
 

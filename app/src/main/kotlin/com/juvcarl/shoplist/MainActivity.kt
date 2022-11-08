@@ -38,9 +38,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var nearbyConnectionManager: NearbyConnectionManager
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -50,10 +47,6 @@ class MainActivity : ComponentActivity() {
             ShopListApp(windowSizeClass = calculateWindowSizeClass(activity = this))
         }
     }
-
-
-
-
 
 }
 

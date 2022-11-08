@@ -1,5 +1,7 @@
 package com.juvcarl.shoplist.features.settings
 
+import android.content.Intent
+import android.provider.CalendarContract.Colors
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -8,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,13 +30,28 @@ fun SettingsRoute(
 ){
     val connectNearbyState by viewModel.connectWithNearbyUsers.collectAsState()
     val bulkInsertStatus by viewModel.bulkInsertStatus.collectAsState()
+    val exportString by viewModel.exportString.collectAsState()
 
     SettingsScreen(
         connectNearbyState,
         bulkInsertStatus,
         viewModel::addItemsInBulk,
-        viewModel::toggleConnectNearby
+        viewModel::toggleConnectNearby,
+        viewModel::exportList
     )
+
+    if(!exportString.isEmpty()){
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, exportString)
+            type = "text/plain"
+        }
+        val context = LocalContext.current
+        val shareIntent = Intent.createChooser(sendIntent, stringResource(id = R.string.share_list))
+        context.startActivity(shareIntent)
+
+        viewModel.listShared()
+    }
 
 
 }
@@ -41,10 +59,11 @@ fun SettingsRoute(
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    connectNearby: Pair<Boolean,String>,
+    connectNearby: Pair<Boolean, String>,
     bulkInsertStatus: BulkInsertStatus = BulkInsertStatus.Empty,
-    addMultipleItemsFunction: (String, Boolean, String) -> Unit = { _: String, _: Boolean, _: String -> },
-    connectNearbyUsers: (Boolean) -> Unit = { _: Boolean ->}
+    addMultipleItemsFunction: (String, Boolean, String) -> Unit,
+    connectNearbyUsers: (Boolean) -> Unit,
+    exportList: () -> Unit
 ){
 
     var openBulkInsertDialog by remember {
@@ -80,10 +99,11 @@ fun SettingsScreen(
                 SettingsDisplay(
                     connectNearby,
                     connectNearbyUsers,
-                    bulkInsertStatus
-                ){
-                    openBulkInsertDialog = true
-                }
+                    bulkInsertStatus,{
+                        openBulkInsertDialog = true
+                    },
+                    exportList
+                )
             }
         }
     }
@@ -124,7 +144,8 @@ fun SettingsDisplay(
     connectNearby: Pair<Boolean, String>,
     connectNearbyUsers: (Boolean) -> Unit,
     bulkInsertStatus: BulkInsertStatus = BulkInsertStatus.Empty,
-    openBulkDialog: () -> Unit
+    openBulkDialog: () -> Unit,
+    exportList: () -> Unit
 ){
 
     Column(
@@ -146,8 +167,29 @@ fun SettingsDisplay(
                 openBulkDialog()
             }
         }
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ExportListSection(exportList)
+        }
     }
+}
 
+@Composable
+fun ExportListSection(exportList: () -> Unit){
+    Column {
+        Text(stringResource(id = R.string.export_list), style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(id = R.string.export_list_instruction), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+        Button(
+            onClick = {
+                exportList()
+            },
+            modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+            shape = RoundedCornerShape(20)
+        ) {
+            Text(stringResource(id = R.string.export_list))
+        }
+    }
 }
 
 @Composable
@@ -175,10 +217,10 @@ fun BulkInsertSection(
                 Text(stringResource(id = R.string.add_multiple_items))
             }
             if(bulkInsertStatus == BulkInsertStatus.Success){
-                Text(stringResource(id = R.string.add_items_success), style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center)
+                Text(stringResource(id = R.string.add_items_success), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             }
             if(bulkInsertStatus == BulkInsertStatus.Error){
-                Text(stringResource(id = R.string.error_adding_items), style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center)
+                Text(stringResource(id = R.string.error_adding_items), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             }
         }
     }
@@ -217,34 +259,19 @@ fun BulkInsertSectionEmptyPreview(){
     ShopListTheme {
         Column {
             BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Empty)
+            BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Error)
+            BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Success)
+            BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Loading)
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun BulkInsertSectionErrorPreview(){
+fun ExportListSectionEmptyPreview(){
     ShopListTheme {
         Column {
-            BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Error)
-        }
-    }
-}
-@Preview(showBackground = true)
-@Composable
-fun BulkInsertSectionSuccessPreview(){
-    ShopListTheme {
-        Column {
-            BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Success)
-        }
-    }
-}
-@Preview(showBackground = true)
-@Composable
-fun BulkInsertSectionLoadingPreview(){
-    ShopListTheme {
-        Column {
-            BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Loading)
+            ExportListSection({})
         }
     }
 }
