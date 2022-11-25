@@ -155,9 +155,6 @@ fun AllItemsList(
     showSearchBar: Boolean = false,
     searchProduct: (String) -> Unit
 ){
-    val focusRequester = remember { FocusRequester() }
-    val keyboard = LocalSoftwareKeyboardController.current
-
     LazyColumn(modifier = Modifier
         .fillMaxSize()
         .padding(12.dp)){
@@ -167,8 +164,7 @@ fun AllItemsList(
         if(showSearchBar){
             item {
                 SearchBar(modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
+                    .fillMaxWidth(),
                     searchAction = searchProduct)
             }
         }
@@ -188,15 +184,6 @@ fun AllItemsList(
         }
         item {
             Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-        }
-    }
-
-    LaunchedEffect(showSearchBar) {
-        Log.d("ShopList","showKeyboard value = $showSearchBar")
-        if (showSearchBar) {
-            focusRequester.requestFocus()
-            delay(100) // Make sure you have delay here
-            keyboard?.show()
         }
     }
 }
