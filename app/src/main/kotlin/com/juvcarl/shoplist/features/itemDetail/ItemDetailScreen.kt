@@ -53,7 +53,7 @@ fun ItemDetailScreen(
 
     var item by remember{mutableStateOf<Item?>(null)}
 
-    ShopListTheme {
+
         Scaffold (
             topBar = {
                 ShopListTopAppBar(
@@ -77,7 +77,7 @@ fun ItemDetailScreen(
                     )
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
         ) { innerPadding ->
             Surface(
@@ -96,7 +96,6 @@ fun ItemDetailScreen(
                 }
             }
         }
-    }
 }
 
 @Composable
