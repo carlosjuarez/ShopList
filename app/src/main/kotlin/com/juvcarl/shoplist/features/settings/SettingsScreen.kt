@@ -87,7 +87,7 @@ fun SettingsScreen(
                     )
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
         ) { innerPadding ->
             Surface(

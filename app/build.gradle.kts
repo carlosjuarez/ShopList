@@ -109,6 +109,7 @@ dependencies {
     implementation(libs.play.services.nearby)
 
     implementation(libs.accompanist.permissions)
+    implementation(libs.accompanist.systemui)
 
     api(libs.junit4)
     api(libs.androidx.test.core)

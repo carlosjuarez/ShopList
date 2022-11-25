@@ -62,7 +62,7 @@ fun AllItemsScreen(
         openAddItemDialog = false
     }
 
-    ShopListTheme {
+
         Scaffold (
             topBar = {
                 ShopListTopAppBar(
@@ -82,7 +82,7 @@ fun AllItemsScreen(
                     )
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
         ) {
             innerPadding ->
@@ -101,7 +101,6 @@ fun AllItemsScreen(
                 }
             }
         }
-    }
 }
 
 @Composable
@@ -126,6 +125,7 @@ fun AddNewItem(addItem: (String,Boolean,String) -> Unit){
 fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (String,Boolean,String) -> Unit, onDismissDialog : () -> Unit){
     if(showDialog){
         AlertDialog(
+            tonalElevation = 4.dp,
             onDismissRequest = onDismissDialog,
             title = {
                 Text(text = stringResource(id = R.string.add_new_item), textAlign = TextAlign.Center, fontSize = MaterialTheme.typography.titleLarge.fontSize, modifier = Modifier.fillMaxWidth())
