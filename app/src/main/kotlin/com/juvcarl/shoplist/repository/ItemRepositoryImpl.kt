@@ -54,7 +54,7 @@ class ItemRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun insertMultipleItems(items: List<Item>): List<Long> {
+    override suspend fun ImportItems(items: List<Item>): List<Long> {
         return itemsDao.insertItems(items.map { it.asEntity() })
     }
 
@@ -71,6 +71,10 @@ class ItemRepositoryImpl @Inject constructor(
             val items = itemsDao.listItems()
             items.map { it.asExportString() }.joinToString(",")
         }
+    }
+
+    override suspend fun clearItems() {
+        return itemsDao.clearAll()
     }
 
 }

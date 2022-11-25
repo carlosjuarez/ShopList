@@ -1,7 +1,6 @@
 package com.juvcarl.shoplist.features.settings
 
 import android.content.Intent
-import android.provider.CalendarContract.Colors
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -18,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.juvcarl.shoplist.R
-import com.juvcarl.shoplist.ui.component.AddItemForm
 import com.juvcarl.shoplist.ui.component.RequestNearbyPermissions
 import com.juvcarl.shoplist.ui.component.ShopListTopAppBar
 import com.juvcarl.shoplist.ui.theme.ShopListTheme
@@ -29,15 +27,16 @@ fun SettingsRoute(
     viewModel: SettingsViewModel = hiltViewModel()
 ){
     val connectNearbyState by viewModel.connectWithNearbyUsers.collectAsState()
-    val bulkInsertStatus by viewModel.bulkInsertStatus.collectAsState()
+    val importStatus by viewModel.importStatus.collectAsState()
     val exportString by viewModel.exportString.collectAsState()
 
     SettingsScreen(
         connectNearbyState,
-        bulkInsertStatus,
-        viewModel::addItemsInBulk,
+        importStatus,
+        viewModel::importItems,
         viewModel::toggleConnectNearby,
-        viewModel::exportList
+        viewModel::exportList,
+        viewModel::clearAll
     )
 
     if(!exportString.isEmpty()){
@@ -60,18 +59,19 @@ fun SettingsRoute(
 @Composable
 fun SettingsScreen(
     connectNearby: Pair<Boolean, String>,
-    bulkInsertStatus: BulkInsertStatus = BulkInsertStatus.Empty,
-    addMultipleItemsFunction: (String, Boolean, String) -> Unit,
+    importStatus: ImportStatus = ImportStatus.Empty,
+    importItems: (String) -> Unit,
     connectNearbyUsers: (Boolean) -> Unit,
-    exportList: () -> Unit
+    exportList: () -> Unit,
+    clearAll: () -> Unit
 ){
 
-    var openBulkInsertDialog by remember {
+    var openImportDialog by remember {
         mutableStateOf(false)
     }
 
-    BulkInsertDialog(openBulkInsertDialog, addMultipleItemsFunction){
-        openBulkInsertDialog = false
+    ImportDialog(openImportDialog, importItems){
+        openImportDialog = false
     }
 
     ShopListTheme {
@@ -99,10 +99,11 @@ fun SettingsScreen(
                 SettingsDisplay(
                     connectNearby,
                     connectNearbyUsers,
-                    bulkInsertStatus,{
-                        openBulkInsertDialog = true
+                    importStatus,{
+                        openImportDialog = true
                     },
-                    exportList
+                    exportList,
+                    clearAll
                 )
             }
         }
@@ -111,22 +112,38 @@ fun SettingsScreen(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BulkInsertDialog(showDialog: Boolean = false, addMultipleItemsFunction: (String, Boolean, String) -> Unit = { _: String, _: Boolean, _: String -> }, onDismissDialog: () -> Unit = {}){
+fun ImportDialog(showDialog: Boolean = false, importItems: (String) -> Unit, onDismissDialog: () -> Unit){
     if(showDialog){
         AlertDialog(
             onDismissRequest = onDismissDialog,
             properties = DialogProperties(usePlatformDefaultWidth = false),
             title = {
-                Text(text = stringResource(id = R.string.add_multiple_items), textAlign = TextAlign.Center, fontSize = MaterialTheme.typography.titleLarge.fontSize, modifier = Modifier.fillMaxWidth())
+                Text(text = stringResource(id = R.string.import_items), textAlign = TextAlign.Center, fontSize = MaterialTheme.typography.titleLarge.fontSize, modifier = Modifier.fillMaxWidth())
             },
             text = {
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)) {
-                    AddItemForm(addFunction = { input: String, buyAgain: Boolean, type: String ->
-                        addMultipleItemsFunction(input,buyAgain,type)
-                        onDismissDialog()
-                    }, modifier = Modifier.align(Alignment.CenterHorizontally), isSingleLine = false)
+
+                    var input by remember {
+                        mutableStateOf("")
+                    }
+
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = input,
+                        onValueChange = { input = it },
+                        singleLine = false,
+                        maxLines = 3,
+                        label = { Text(text = stringResource(id = R.string.items_to_insert)) })
+
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    Button(
+                        onClick = { importItems(input) },
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally), shape = RoundedCornerShape(20)
+                    ) {
+                        Text(stringResource(id = R.string.add))
+                    }
                 }
 
             },
@@ -143,9 +160,10 @@ fun BulkInsertDialog(showDialog: Boolean = false, addMultipleItemsFunction: (Str
 fun SettingsDisplay(
     connectNearby: Pair<Boolean, String>,
     connectNearbyUsers: (Boolean) -> Unit,
-    bulkInsertStatus: BulkInsertStatus = BulkInsertStatus.Empty,
-    openBulkDialog: () -> Unit,
-    exportList: () -> Unit
+    importStatus: ImportStatus = ImportStatus.Empty,
+    openImportDialog: () -> Unit,
+    exportList: () -> Unit,
+    removeAll: () -> Unit
 ){
 
     Column(
@@ -163,14 +181,38 @@ fun SettingsDisplay(
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
-            BulkInsertSection(bulkInsertStatus){
-                openBulkDialog()
+            ImportSection(importStatus){
+                openImportDialog()
             }
         }
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
             ExportListSection(exportList)
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            RemoveAllSection(removeAll = removeAll)
+        }
+    }
+}
+
+@Composable
+fun RemoveAllSection(removeAll: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(stringResource(id = R.string.remove_all), style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(id = R.string.clean_list_of_items), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+        Button(
+            onClick = {
+                removeAll()
+            },
+            modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+            shape = RoundedCornerShape(20)
+        ) {
+            Text(stringResource(id = R.string.remove_all))
         }
     }
 }
@@ -193,33 +235,33 @@ fun ExportListSection(exportList: () -> Unit){
 }
 
 @Composable
-fun BulkInsertSection(
-    bulkInsertStatus: BulkInsertStatus = BulkInsertStatus.Empty,
-    openBulkDialog: () -> Unit = {}
+fun ImportSection(
+    importStatus: ImportStatus = ImportStatus.Empty,
+    openImportDialog: () -> Unit = {}
 ) {
 
     Column {
-        Text(stringResource(id = R.string.add_multiple_items), style = MaterialTheme.typography.titleLarge)
-        Text(stringResource(id = R.string.add_multiple_items_instructions), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
-        if(bulkInsertStatus == BulkInsertStatus.Loading){
+        Text(stringResource(id = R.string.import_items), style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(id = R.string.import_items_instructions), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(8.dp))
+        if(importStatus == ImportStatus.Loading){
             CircularProgressIndicator(
                 modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
             )
         }else{
             Button(
                 onClick = {
-                    openBulkDialog()
+                    openImportDialog()
                 },
-                enabled = if(bulkInsertStatus == BulkInsertStatus.Loading) false else true,
+                enabled = if(importStatus == ImportStatus.Loading) false else true,
                 modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                 shape = RoundedCornerShape(20)
             ) {
-                Text(stringResource(id = R.string.add_multiple_items))
+                Text(stringResource(id = R.string.import_items))
             }
-            if(bulkInsertStatus == BulkInsertStatus.Success){
+            if(importStatus == ImportStatus.Success){
                 Text(stringResource(id = R.string.add_items_success), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             }
-            if(bulkInsertStatus == BulkInsertStatus.Error){
+            if(importStatus == ImportStatus.Error){
                 Text(stringResource(id = R.string.error_adding_items), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             }
         }
@@ -255,13 +297,13 @@ fun ToggleSetting(connectNearby: Pair<Boolean, String>, connectNearbyUsers: (Boo
 
 @Preview(showBackground = true)
 @Composable
-fun BulkInsertSectionEmptyPreview(){
+fun ImportItemsSectionEmptyPreview(){
     ShopListTheme {
         Column {
-            BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Empty)
-            BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Error)
-            BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Success)
-            BulkInsertSection(bulkInsertStatus = BulkInsertStatus.Loading)
+            ImportSection(importStatus = ImportStatus.Empty)
+            ImportSection(importStatus = ImportStatus.Error)
+            ImportSection(importStatus = ImportStatus.Success)
+            ImportSection(importStatus = ImportStatus.Loading)
         }
     }
 }
@@ -275,6 +317,17 @@ fun ExportListSectionEmptyPreview(){
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun RemoveALlSectionPreview(){
+    ShopListTheme {
+        Column {
+            RemoveAllSection({})
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
