@@ -62,7 +62,7 @@ fun AllItemsScreen(
         openAddItemDialog = false
     }
 
-    ShopListTheme {
+
         Scaffold (
             topBar = {
                 ShopListTopAppBar(
@@ -82,7 +82,7 @@ fun AllItemsScreen(
                     )
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
         ) {
             innerPadding ->
@@ -101,7 +101,6 @@ fun AllItemsScreen(
                 }
             }
         }
-    }
 }
 
 @Composable
@@ -126,6 +125,7 @@ fun AddNewItem(addItem: (String,Boolean,String) -> Unit){
 fun AddNewItemAlertDialog(showDialog: Boolean, addItem: (String,Boolean,String) -> Unit, onDismissDialog : () -> Unit){
     if(showDialog){
         AlertDialog(
+            tonalElevation = 4.dp,
             onDismissRequest = onDismissDialog,
             title = {
                 Text(text = stringResource(id = R.string.add_new_item), textAlign = TextAlign.Center, fontSize = MaterialTheme.typography.titleLarge.fontSize, modifier = Modifier.fillMaxWidth())
@@ -155,9 +155,6 @@ fun AllItemsList(
     showSearchBar: Boolean = false,
     searchProduct: (String) -> Unit
 ){
-    val focusRequester = remember { FocusRequester() }
-    val keyboard = LocalSoftwareKeyboardController.current
-
     LazyColumn(modifier = Modifier
         .fillMaxSize()
         .padding(12.dp)){
@@ -167,8 +164,7 @@ fun AllItemsList(
         if(showSearchBar){
             item {
                 SearchBar(modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
+                    .fillMaxWidth(),
                     searchAction = searchProduct)
             }
         }
@@ -188,15 +184,6 @@ fun AllItemsList(
         }
         item {
             Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-        }
-    }
-
-    LaunchedEffect(showSearchBar) {
-        Log.d("ShopList","showKeyboard value = $showSearchBar")
-        if (showSearchBar) {
-            focusRequester.requestFocus()
-            delay(100) // Make sure you have delay here
-            keyboard?.show()
         }
     }
 }

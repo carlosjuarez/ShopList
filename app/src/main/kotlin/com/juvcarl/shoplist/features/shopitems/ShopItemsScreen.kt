@@ -96,7 +96,7 @@ fun ShopItemsScreen(
         showFinishShoppingDialog = false
     })
 
-    ShopListTheme {
+
         Scaffold (
             topBar = {
                 ShopListTopAppBar(
@@ -126,10 +126,11 @@ fun ShopItemsScreen(
                     )
                 )
             },
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
         ) { innerPadding ->
             Surface(
+                color = Color.Transparent,
                 modifier = Modifier
                     .padding(innerPadding)
                     .consumedWindowInsets(innerPadding)
@@ -142,7 +143,6 @@ fun ShopItemsScreen(
                 }
             }
         }
-    }
 }
 
 @Composable
