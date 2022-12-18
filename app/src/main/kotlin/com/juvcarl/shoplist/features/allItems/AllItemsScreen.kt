@@ -32,6 +32,7 @@ import com.juvcarl.shoplist.ui.ShopListIconWithLabel
 import com.juvcarl.shoplist.ui.ShopListIcons
 import com.juvcarl.shoplist.ui.component.*
 import kotlinx.coroutines.delay
+import java.util.*
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -230,8 +231,8 @@ fun ItemCard(item: Item, navigateToDetail: (Long) -> Unit, toggleBuyStatus: (Ite
 @Composable
 fun AllItemsExistingItemsScreenPreview(){
     val success = AllItemsUIState.Success(listOf(
-        Item(0L,"Test 1",Clock.System.now(),true,"test"),
-        Item(1L,"Test 2",Clock.System.now(),false,"test")
+        Item(0L,"Test 1",Clock.System.now(),true,"test", identifier = UUID.randomUUID()),
+        Item(1L,"Test 2",Clock.System.now(),false,"test", identifier = UUID.randomUUID())
     ))
     AllItemsScreen(
         allItemsState = success,
@@ -269,7 +270,7 @@ fun AddNewItemPreview(){
 @Composable
 fun AllProductsListPreview(){
     ShopListTheme {
-        var item = Item(0L,"test product", Clock.System.now(),true,"special")
+        var item = Item(0L,"test product", Clock.System.now(),true,"special", identifier = UUID.randomUUID())
         ItemCard(item = item, {},{})
     }
 }

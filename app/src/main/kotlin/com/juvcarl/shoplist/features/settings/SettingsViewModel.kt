@@ -55,7 +55,7 @@ class SettingsViewModel @Inject constructor(
             }
             val itemNames = input.separateItems()
             val itemsToImport = itemNames.map { name ->
-                Item(name = name, buyAgain = buyAgain, buyQty = 0.0, buyStatus = BUYSTATUS.BUY.name, date = Clock.System.now(), type = type)
+                Item(name = name, buyAgain = true, buyQty = 0.0, buyStatus = BUYSTATUS.BUY.name, date = Clock.System.now(), type = "")
             }
             val result = itemRepository.ImportItems(itemsToImport)
             importStatus.update {

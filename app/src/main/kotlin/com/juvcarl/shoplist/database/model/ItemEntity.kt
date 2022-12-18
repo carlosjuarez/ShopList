@@ -1,5 +1,6 @@
 package com.juvcarl.shoplist.database.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.juvcarl.shoplist.data.model.BUYSTATUS
@@ -17,7 +18,7 @@ data class ItemEntity(
     val type: String?,
     val buyQty: Double? = null,
     val buyStatus: String? = null,
-    val identifier: UUID? = null,
+    val identifier: UUID?,
 ) : java.io.Serializable
 
 fun ItemEntity.asModel() = Item(
@@ -51,5 +52,5 @@ fun ItemEntity.asShareString() : String {
 }
 
 fun ItemEntity.asExportString() : String{
-    return this.S
+    return ""
 }
