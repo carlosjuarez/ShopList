@@ -41,6 +41,13 @@ class ShopListAppState(
 
     val topLevelDestinations: List<TopLevelDestination> = listOf(
         TopLevelDestination(
+            route = AllItemsDestination.route,
+            destination = AllItemsDestination.destination,
+            selectedIcon = ShopListIcons.AllItems,
+            unselectedIcon = ShopListIcons.AllItemsUnselected,
+            iconTextId = R.string.all_items
+        ),
+        TopLevelDestination(
             route = ShopItemsDestination.route,
             destination = ShopItemsDestination.destination,
             selectedIcon = ShopListIcons.ShopListSelected,
