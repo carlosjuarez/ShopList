@@ -2,6 +2,7 @@ package com.juvcarl.shoplist.data.model
 
 import com.juvcarl.shoplist.database.model.ItemEntity
 import kotlinx.datetime.Instant
+import java.util.UUID
 
 data class Item(val id: Long = 0L,
                 val name: String,
@@ -9,7 +10,8 @@ data class Item(val id: Long = 0L,
                 val buyAgain: Boolean,
                 val type: String? = null,
                 val buyQty: Double? = null,
-                val buyStatus: String? = if(buyAgain) BUYSTATUS.BUY.name else BUYSTATUS.BOUGHT.name)
+                val buyStatus: String? = if(buyAgain) BUYSTATUS.BUY.name else BUYSTATUS.BOUGHT.name,
+                val identifier: UUID? = UUID.randomUUID())
 
 enum class BUYSTATUS{
     BUY,
@@ -25,5 +27,6 @@ fun Item.asEntity(): ItemEntity{
         buyAgain = this.buyAgain,
         type = this.type,
         buyQty = this.buyQty,
-        buyStatus = this.buyStatus)
+        buyStatus = this.buyStatus,
+        identifier = this.identifier)
 }

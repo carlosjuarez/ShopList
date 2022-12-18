@@ -1,7 +1,6 @@
 package com.juvcarl.shoplist.repository
 
 import com.juvcarl.shoplist.data.model.Item
-import com.juvcarl.shoplist.database.model.ItemEntity
 import kotlinx.coroutines.flow.Flow
 
 interface ItemRepository {
@@ -14,7 +13,8 @@ interface ItemRepository {
     fun getItemsByNameStream(searchQuery: String): Flow<List<Item>>
     fun getItemByIdStream(id: Long): Flow<Item>
     suspend fun finishShopping(keepItems: Boolean)
-    suspend fun insertMultipleItems(items: List<Item>): List<Long>
+    suspend fun ImportItems(items: List<Item>): List<Long>
     suspend fun createShareString(): String
     suspend fun createExportString(): String
+    suspend fun clearItems()
 }

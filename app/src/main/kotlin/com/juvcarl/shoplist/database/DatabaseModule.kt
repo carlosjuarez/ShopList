@@ -18,5 +18,5 @@ class DatabaseModule {
         @ApplicationContext context: Context
     ): ShopListDatabase = Room.databaseBuilder(
         context,ShopListDatabase::class.java, "shoplist database"
-    ).build()
+    ).addMigrations(MIGRATION_3_4).build()
 }

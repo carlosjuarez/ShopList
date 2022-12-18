@@ -70,4 +70,10 @@ interface ItemDao {
     )
     suspend fun resetList()
 
+
+    @Query(
+        value = """DELETE FROM items """
+    )
+    suspend fun clearAll()
+
 }

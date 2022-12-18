@@ -1,11 +1,13 @@
 package com.juvcarl.shoplist.database.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.juvcarl.shoplist.data.model.BUYSTATUS
 import com.juvcarl.shoplist.data.model.Item
 import com.juvcarl.shoplist.extensions.StringWithoutZeroDecimal
 import kotlinx.datetime.Instant
+import java.util.UUID
 
 @Entity(tableName = "items")
 data class ItemEntity(
@@ -15,8 +17,9 @@ data class ItemEntity(
     val buyAgain: Boolean,
     val type: String?,
     val buyQty: Double? = null,
-    val buyStatus: String? = null
-)
+    val buyStatus: String? = null,
+    val identifier: UUID?,
+) : java.io.Serializable
 
 fun ItemEntity.asModel() = Item(
     id = id,
@@ -25,7 +28,8 @@ fun ItemEntity.asModel() = Item(
     buyAgain = buyAgain,
     type = type,
     buyQty = buyQty,
-    buyStatus = buyStatus
+    buyStatus = buyStatus,
+    identifier = identifier
 )
 
 fun ItemEntity.asShareString() : String {
@@ -48,5 +52,5 @@ fun ItemEntity.asShareString() : String {
 }
 
 fun ItemEntity.asExportString() : String{
-    return this.name
+    return ""
 }

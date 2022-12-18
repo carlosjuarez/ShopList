@@ -8,7 +8,6 @@ import com.juvcarl.shoplist.data.model.Item
 import com.juvcarl.shoplist.extensions.separateItems
 import com.juvcarl.shoplist.manager.NearbySynchronizationManager
 import com.juvcarl.shoplist.repository.ItemRepository
-import com.juvcarl.shoplist.repository.Preference
 import com.juvcarl.shoplist.repository.SharedPrefencesRepository
 import com.juvcarl.shoplist.util.IdentityUtils
 
@@ -30,7 +29,7 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
     val connectWithNearbyUsers: MutableStateFlow<Pair<Boolean,String>> = MutableStateFlow(Pair(false,""))
-    val bulkInsertStatus: MutableStateFlow<BulkInsertStatus> = MutableStateFlow(BulkInsertStatus.Empty)
+    val importStatus: MutableStateFlow<ImportStatus> = MutableStateFlow(ImportStatus.Empty)
     val exportString: MutableStateFlow<String> = MutableStateFlow("")
 
     fun toggleConnectNearby(connectNearby: Boolean){
@@ -49,21 +48,21 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun addItemsInBulk(input: String, buyAgain: Boolean, type: String = "Basic" ){
+    fun importItems(input: String){
         viewModelScope.launch(Dispatchers.IO) {
-            bulkInsertStatus.update {
-                BulkInsertStatus.Loading
+            importStatus.update {
+                ImportStatus.Loading
             }
             val itemNames = input.separateItems()
-            val itemsToInsert = itemNames.map { name ->
-                Item(name = name, buyAgain = buyAgain, buyQty = 0.0, buyStatus = BUYSTATUS.BUY.name, date = Clock.System.now(), type = type)
+            val itemsToImport = itemNames.map { name ->
+                Item(name = name, buyAgain = true, buyQty = 0.0, buyStatus = BUYSTATUS.BUY.name, date = Clock.System.now(), type = "")
             }
-            val result = itemRepository.insertMultipleItems(itemsToInsert)
-            bulkInsertStatus.update {
-                if(result.size == itemsToInsert.size){
-                    BulkInsertStatus.Success
+            val result = itemRepository.ImportItems(itemsToImport)
+            importStatus.update {
+                if(result.size == itemsToImport.size){
+                    ImportStatus.Success
                 }else{
-                    BulkInsertStatus.Error
+                    ImportStatus.Error
                 }
             }
 
@@ -81,11 +80,17 @@ class SettingsViewModel @Inject constructor(
             exportString.update { "" }
         }
     }
+
+    fun clearAll(){
+        viewModelScope.launch {
+            itemRepository.clearItems()
+        }
+    }
 }
 
-sealed interface BulkInsertStatus{
-    object Empty : BulkInsertStatus
-    object Loading : BulkInsertStatus
-    object Success: BulkInsertStatus
-    object Error: BulkInsertStatus
+sealed interface ImportStatus{
+    object Empty : ImportStatus
+    object Loading : ImportStatus
+    object Success: ImportStatus
+    object Error: ImportStatus
 }
