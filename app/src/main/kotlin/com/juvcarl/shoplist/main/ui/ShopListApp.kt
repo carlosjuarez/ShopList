@@ -50,8 +50,7 @@ fun ShopListApp(
                         )
                     }
                 }
-            ){
-                    paddingValues ->
+            ){  paddingValues ->
                 Row(
                     Modifier
                         .fillMaxSize()
@@ -88,8 +87,7 @@ fun ShopListBottomBar(
             )
         ){
             destinations.forEach { destination ->
-                val selected =
-                    currentDestination?.hierarchy?.any { it.route == destination.route } == true
+                val selected = currentDestination?.hierarchy?.any { it.route == destination.route } == true
                 ShopListNavigationBarItem(
                     selected = selected,
                     onClick = { onNavigateToDestination(destination) },

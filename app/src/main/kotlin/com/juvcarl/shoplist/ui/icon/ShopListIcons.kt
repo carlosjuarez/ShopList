@@ -70,6 +70,8 @@ object ShopListIcons {
     val ExportList = Icon.DrawableResourceIcon(R.drawable.ic_outline_export, R.string.export_list)
     val ShareList = Icon.DrawableResourceIcon(R.drawable.ic_outline_share, R.string.share_list)
     val Menu = Icon.DrawableResourceIcon(R.drawable.ic_outline_menu, R.string.menu)
+    val AllItems = Icon.DrawableResourceIcon(R.drawable.ic_outline_all_items, R.string.all_items)
+    val AllItemsUnselected = Icon.DrawableResourceIcon(R.drawable.ic_outline_all_items_unselected, R.string.all_items)
 }
 
 sealed class Icon {
