@@ -65,4 +65,5 @@
     <string name="menu">Menu</string>
     <string name="export_list_instruction">Share your list of items, the other person can paste the shared text to add multiple items</string>
     <string name="clean_list_of_items">Clear all items so you can start again</string>
+    <string name="hide_bought_items">Hide bought items</string>
 </resources>

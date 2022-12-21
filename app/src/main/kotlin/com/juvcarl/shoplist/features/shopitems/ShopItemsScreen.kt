@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,7 +54,8 @@ fun ShopItemsRoute(
         viewModel::updateBuyQty,
         viewModel::toggleExpandedListItem,
         viewModel::finishShopping,
-        viewModel::shareList)
+        viewModel::shareList,
+        viewModel::toggleSortStatus)
 
 
     if(!sharedString.isEmpty()){
@@ -81,68 +81,68 @@ fun ShopItemsScreen(
     changeBuyStatus: (Item) -> Unit,
     updateBuyQty: (Item, Double, String?) -> Unit,
     toggleExpansion: (Long) -> Unit,
-    finishShopping: (Boolean) -> Unit,
-    shareList: () -> Unit
+    finishShopping: () -> Unit,
+    shareList: () -> Unit,
+    toggleSortStatus: (Boolean) -> Unit
 ){
     var showSearchBar by remember { mutableStateOf(false) }
-    var showFinishShoppingDialog by remember { mutableStateOf(false) }
-
     var expandedMenu by remember { mutableStateOf(false) }
 
-    FinishShoppingDialog(showFinishShoppingDialog,{
-        showFinishShoppingDialog = false
-    },{
-        finishShopping(it)
-        showFinishShoppingDialog = false
-    })
-
-
-        Scaffold (
-            topBar = {
-                ShopListTopAppBar(
-                    titleRes = R.string.shop_list,
-                    navigationIcon = if(showSearchBar) ShopListIcons.SearchSelected else ShopListIcons.SearchUnselected,
-                    onNavigationClick = {
-                        showSearchBar = !showSearchBar
-                        if(!showSearchBar) searchProduct("")
-                    },
-                    actionsContent = {
-                        IconButton(onClick = {
-                            expandedMenu = true
-                        }) {
-                            ShopListIcon(icon = ShopListIcons.Menu)
-                        }
-                        ShopItemsMenu(
-                            expanded = expandedMenu,
-                            onDismiss = { expandedMenu = false },
-                            finishShopping = { showFinishShoppingDialog = true },
-                            shareList = shareList)
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = Color.Transparent
-                    ),
-                    modifier = Modifier.windowInsetsPadding(
-                        WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
-                    )
+    Scaffold (
+        topBar = {
+            ShopListTopAppBar(
+                titleRes = R.string.shop_list,
+                navigationIcon = if(showSearchBar) ShopListIcons.SearchSelected else ShopListIcons.SearchUnselected,
+                onNavigationClick = {
+                    showSearchBar = !showSearchBar
+                    if(!showSearchBar) searchProduct("")
+                },
+                actionsContent = {
+                    IconButton(onClick = {
+                        expandedMenu = true
+                    }) {
+                        ShopListIcon(icon = ShopListIcons.Menu)
+                    }
+                    ShopItemsMenu(
+                        expanded = expandedMenu,
+                        onDismiss = { expandedMenu = false },
+                        finishShopping = { finishShopping() },
+                        shareList = shareList)
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
+                ),
+                modifier = Modifier.windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
                 )
-            },
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) { innerPadding ->
-            Surface(
-                color = Color.Transparent,
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumedWindowInsets(innerPadding)
-                    .fillMaxSize()
-            ) {
-                when(shopItemsState){
-                    ShopItemsUIState.Error -> ErrorScreen()
-                    ShopItemsUIState.Loading -> LoadingScreen()
-                    is ShopItemsUIState.Success -> ShopItemsList(shopItemsState.items, expandedItemsList, showSearchBar, searchProduct, changeBuyStatus, updateBuyQty, toggleExpansion)
-                }
+            )
+        },
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
+    ) { innerPadding ->
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumedWindowInsets(innerPadding)
+                .fillMaxSize()
+        ) {
+            when(shopItemsState){
+                ShopItemsUIState.Error -> ErrorScreen()
+                ShopItemsUIState.Loading -> LoadingScreen()
+                is ShopItemsUIState.Success -> ShopItemsList(shopItemsState.items,
+                    expandedItemsList,
+                    showSearchBar,
+                    shopItemsState.sortByStatus,
+                    searchProduct,
+                    changeBuyStatus,
+                    updateBuyQty,
+                    toggleExpansion,
+                    toggleSortStatus
+                )
             }
         }
+    }
 }
 
 @Composable
@@ -197,16 +197,18 @@ fun FinishShoppingDialog(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ShopItemsList(
     itemsList: List<Item>,
     expandedItemsList: List<Long> = listOf(),
     showSearchBar: Boolean,
+    sortByStatus: Boolean,
     searchProduct: (String) -> Unit,
     changeBuyStatus: (Item) -> Unit = {},
     updateBuyQty: (Item, Double, String?) -> Unit,
-    toggleExpansion: (Long) -> Unit = {}
+    toggleExpansion: (Long) -> Unit = {},
+    toggleSortStatus: (Boolean) -> Unit = {},
 ) {
 
     val focusRequester = FocusRequester()
@@ -226,6 +228,17 @@ fun ShopItemsList(
                     .focusRequester(focusRequester),
                     searchAction = searchProduct)
             }
+        }
+        item{
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ){
+                Checkbox(checked = sortByStatus, onCheckedChange = { toggleSortStatus(!sortByStatus) })
+                Text(stringResource(id = R.string.hide_bought_items))
+            }
+            Spacer(modifier = Modifier.padding(4.dp))
         }
         if(itemsList.isEmpty()){
             item{
@@ -386,7 +399,7 @@ fun ShopItemsScreenPreview(){
         listOf(
             Item(0L,"test",Clock.System.now(),true,"test",1.0,BUYSTATUS.BUY.name),
             Item(1L,"test1",Clock.System.now(),true,"test",1.0,BUYSTATUS.BUY.name)
-        )
+        ),true
     )
 
     ShopListTheme {
@@ -397,9 +410,9 @@ fun ShopItemsScreenPreview(){
             changeBuyStatus = {},
             updateBuyQty = {_,_,_, ->},
             toggleExpansion = {},
-            finishShopping = {}) {
-
-        }
+            finishShopping = {},
+            shareList = {},
+            toggleSortStatus = {})
     }
 }
 
@@ -465,6 +478,7 @@ fun ShopItemsListPreview(){
         itemsList = listItems,
         expandedItemsList = listOf(),
         showSearchBar = false,
+        sortByStatus = false,
         searchProduct = {},
         updateBuyQty = { item: Item, d: Double, s: String? -> },
         toggleExpansion = {}
@@ -504,6 +518,7 @@ fun ShopItemsListWithSearchBarPreview(){
         itemsList = listItems,
         expandedItemsList = listOf(),
         showSearchBar = true,
+        sortByStatus = false,
         searchProduct = {},
         updateBuyQty = { _: Item, _: Double, _: String? -> },
         toggleExpansion = {}
