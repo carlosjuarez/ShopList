@@ -21,21 +21,37 @@ class ShopItemsViewModel @Inject constructor(
 
     val shareListString = MutableStateFlow("")
 
-    val itemsUIState : StateFlow<ShopItemsUIState> = searchQuery
-        .debounce(200)
-        .distinctUntilChanged().combine(
-                itemsRepository.getItemsToBuyStream()
-        ){ search,items ->
-                if(search.isNotEmpty()){
-                    ShopItemsUIState.Success(items.filter { it.name.contains(search) })
-                }else{
-                    ShopItemsUIState.Success(items)
-                }
-        }.catch {
-                ShopItemsUIState.Error
-        }.stateIn(scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = ShopItemsUIState.Loading)
+    val sortByStatus = MutableStateFlow(false)
+
+    val itemsUIState : StateFlow<ShopItemsUIState> = combine(
+        searchQuery
+            .debounce(200)
+            .distinctUntilChanged(),
+        itemsRepository.getItemsToBuyStream(),
+        sortByStatus
+    ){ search,items, sort ->
+
+        val itemslist = items.filter {
+            if(search.isNotEmpty()){
+                it.name.contains(search)
+            }else{
+                true
+            }
+        }.filter {
+            if(sort){
+                it.buyStatus == BUYSTATUS.BUY.name
+            }else{
+                true
+            }
+        }
+
+        ShopItemsUIState.Success(itemslist,sort)
+
+    }.catch {
+        ShopItemsUIState.Error
+    }.stateIn(scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ShopItemsUIState.Loading)
 
     val expandedItemList : MutableStateFlow<List<Long>> = MutableStateFlow(listOf())
 
@@ -74,9 +90,9 @@ class ShopItemsViewModel @Inject constructor(
         }
     }
 
-    fun finishShopping(keepItems: Boolean){
+    fun finishShopping(){
         viewModelScope.launch {
-            itemsRepository.finishShopping(keepItems)
+            itemsRepository.finishShopping(false)
         }
     }
 
@@ -92,10 +108,14 @@ class ShopItemsViewModel @Inject constructor(
         }
     }
 
+    fun toggleSortStatus(sort: Boolean){
+        sortByStatus.value = sort
+    }
+
 }
 
 sealed interface ShopItemsUIState{
-    data class Success(val items: List<Item>) : ShopItemsUIState
+    data class Success(val items: List<Item>,val sortByStatus: Boolean) : ShopItemsUIState
     object Loading : ShopItemsUIState
     object Error : ShopItemsUIState
 }
