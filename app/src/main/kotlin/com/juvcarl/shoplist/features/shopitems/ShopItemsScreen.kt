@@ -36,6 +36,7 @@ import com.juvcarl.shoplist.ui.component.*
 import com.juvcarl.shoplist.ui.theme.ShopListTheme
 import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
+import kotlin.reflect.KFunction1
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -48,7 +49,8 @@ fun ShopItemsRoute(
 
     val sharedString : String by viewModel.shareListString.collectAsStateWithLifecycle()
 
-    ShopItemsScreen(shopItemsState = itemsState, expandedItemsList,
+    ShopItemsScreen(
+        shopItemsState = itemsState, expandedItemsList,
         viewModel::searchItem,
         viewModel::changeBuyStatus,
         viewModel::updateBuyQty,
@@ -81,12 +83,22 @@ fun ShopItemsScreen(
     changeBuyStatus: (Item) -> Unit,
     updateBuyQty: (Item, Double, String?) -> Unit,
     toggleExpansion: (Long) -> Unit,
-    finishShopping: () -> Unit,
+    finishShopping: (Boolean) -> Unit,
     shareList: () -> Unit,
     toggleSortStatus: (Boolean) -> Unit
 ){
     var showSearchBar by remember { mutableStateOf(false) }
     var expandedMenu by remember { mutableStateOf(false) }
+    var showFinishShoppingDialog by remember { mutableStateOf(false) }
+
+    if(showFinishShoppingDialog){
+        FinishShoppingDialog(
+            showFinishShoppingDialog = showFinishShoppingDialog,
+            onDismiss = { showFinishShoppingDialog = false },
+            removeItems = { finishShopping(it)
+                            showFinishShoppingDialog = false }
+        )
+    }
 
     Scaffold (
         topBar = {
@@ -106,7 +118,7 @@ fun ShopItemsScreen(
                     ShopItemsMenu(
                         expanded = expandedMenu,
                         onDismiss = { expandedMenu = false },
-                        finishShopping = { finishShopping() },
+                        finishShopping = { showFinishShoppingDialog = true },
                         shareList = shareList)
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -408,11 +420,11 @@ fun ShopItemsScreenPreview(){
             expandedItemsList = listOf(),
             searchProduct = {},
             changeBuyStatus = {},
-            updateBuyQty = {_,_,_, ->},
+            updateBuyQty = { _, _, _, ->},
             toggleExpansion = {},
             finishShopping = {},
-            shareList = {},
-            toggleSortStatus = {})
+            shareList = {}
+        ) {}
     }
 }
 

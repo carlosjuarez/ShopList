@@ -13,8 +13,8 @@ plugins {
 android {
     defaultConfig {
         applicationId = "com.juvcarl.shoplist"
-        versionCode = 5
-        versionName = "0.0.5" // X.Y.Z; X = Major, Y = minor, Z = Patch level
+        versionCode = 6
+        versionName = "0.0.6" // X.Y.Z; X = Major, Y = minor, Z = Patch level
 
         // Custom test runner to set up Hilt dependency graph
         testInstrumentationRunner = "com.juvcarl.shoplist.testing.ShopListTestRunner"

@@ -90,9 +90,9 @@ class ShopItemsViewModel @Inject constructor(
         }
     }
 
-    fun finishShopping(){
+    fun finishShopping(keepItems: Boolean){
         viewModelScope.launch {
-            itemsRepository.finishShopping(false)
+            itemsRepository.finishShopping(keepItems)
         }
     }
 
