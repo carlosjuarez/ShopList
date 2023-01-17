@@ -91,14 +91,15 @@ fun ShopItemsScreen(
     var expandedMenu by remember { mutableStateOf(false) }
     var showFinishShoppingDialog by remember { mutableStateOf(false) }
 
-    if(showFinishShoppingDialog){
-        FinishShoppingDialog(
-            showFinishShoppingDialog = showFinishShoppingDialog,
-            onDismiss = { showFinishShoppingDialog = false },
-            removeItems = { finishShopping(it)
-                            showFinishShoppingDialog = false }
-        )
-    }
+
+    FinishShoppingDialog(
+        showFinishShoppingDialog = showFinishShoppingDialog,
+        onDismiss = {
+            showFinishShoppingDialog = !showFinishShoppingDialog },
+        removeItems = {
+            expandedMenu = false
+            finishShopping(it) }
+    )
 
     Scaffold (
         topBar = {
@@ -187,6 +188,7 @@ fun FinishShoppingDialog(
             onDismissRequest = { onDismiss() },
             dismissButton = {
                 TextButton(onClick = {
+                    onDismiss()
                     removeItems(true)
                 }) {
                     Text(text = stringResource(id = R.string.keep_items))
@@ -194,6 +196,7 @@ fun FinishShoppingDialog(
             },
             confirmButton = {
                 TextButton(onClick = {
+                    onDismiss()
                     removeItems(false)
                 }) {
                     Text(text = stringResource(id = R.string.remove_all))
@@ -226,52 +229,52 @@ fun ShopItemsList(
     val focusRequester = FocusRequester()
     val keyboard = LocalSoftwareKeyboardController.current
 
-
-    LazyColumn(modifier = Modifier
-        .fillMaxSize()
-        .padding(12.dp)){
-        item {
-            Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-        }
+    Column(modifier = Modifier.fillMaxWidth()) {
         if(showSearchBar){
-            item {
+            Row(modifier = Modifier.padding(horizontal = 12.dp)){
                 SearchBar(modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
                     searchAction = searchProduct)
             }
         }
-        item{
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ){
-                Checkbox(checked = sortByStatus, onCheckedChange = { toggleSortStatus(!sortByStatus) })
-                Text(stringResource(id = R.string.hide_bought_items))
-            }
-            Spacer(modifier = Modifier.padding(4.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ){
+            Checkbox(checked = sortByStatus, onCheckedChange = { toggleSortStatus(!sortByStatus) })
+            Text(stringResource(id = R.string.hide_bought_items))
         }
-        if(itemsList.isEmpty()){
-            item{
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)) {
-                    Text(stringResource(id = R.string.no_items_to_shop), modifier = Modifier.align(alignment = Alignment.CenterHorizontally))
-                }
+        Spacer(modifier = Modifier.padding(4.dp))
+        LazyColumn(modifier = Modifier
+            .fillMaxSize()
+            .padding(12.dp)){
+            item {
+                Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
             }
-        }else{
-            items(itemsList){ product ->
 
-                val showQtyForm = expandedItemsList.contains(product.id)
-                ItemCard(item = product, changeBuyStatus, updateBuyQty, showQtyForm) {
-                    toggleExpansion(product.id)
+            if(itemsList.isEmpty()){
+                item{
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)) {
+                        Text(stringResource(id = R.string.no_items_to_shop), modifier = Modifier.align(alignment = Alignment.CenterHorizontally))
+                    }
                 }
-                Divider()
+            }else{
+                items(itemsList){ product ->
+
+                    val showQtyForm = expandedItemsList.contains(product.id)
+                    ItemCard(item = product, changeBuyStatus, updateBuyQty, showQtyForm) {
+                        toggleExpansion(product.id)
+                    }
+                    Divider()
+                }
             }
-        }
-        item {
-            Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+            item {
+                Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+            }
         }
     }
 
